@@ -1,0 +1,2145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A modern personal expense tracking application."
+    />
+    <title>Expense Tracker</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Application CSS -->
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+
+  <body>
+    <div class="app-shell">
+      <!-- ==========================================
+             SIDEBAR
+             ========================================== -->
+      <aside class="sidebar">
+        <!-- Logo -->
+        <div class="sidebar-logo">
+          <div class="logo-mark">
+            <i data-lucide="wallet"></i>
+          </div>
+          <div class="logo-text">
+            <span>Expense</span>
+            <strong>Tracker</strong>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="sidebar-navigation">
+          <p class="navigation-label">MENU</p>
+
+          <a href="#" class="navigation-item active" data-page="dashboard">
+            <i data-lucide="layout-dashboard"></i>
+            <span> Dashboard </span>
+          </a>
+
+          <a href="#" class="navigation-item" data-page="transactions">
+            <i data-lucide="arrow-left-right"></i>
+            <span> Transactions </span>
+          </a>
+
+          <a href="#" class="navigation-item" data-page="analytics">
+            <i data-lucide="chart-no-axes-combined"></i>
+            <span> Analytics </span>
+          </a>
+
+          <a href="#" class="navigation-item" data-page="categories">
+            <i data-lucide="tags"></i>
+            <span> Categories </span>
+          </a>
+
+          <p class="navigation-label navigation-label-spaced">SYSTEM</p>
+
+          <a href="#" class="navigation-item" data-page="settings">
+            <i data-lucide="settings-2"></i>
+            <span> Settings </span>
+          </a>
+        </nav>
+
+        <!-- Sidebar Bottom -->
+        <div class="sidebar-bottom">
+          <div class="sidebar-help">
+            <div class="help-icon">
+              <i data-lucide="circle-help"></i>
+            </div>
+            <div>
+              <strong> Need help? </strong>
+              <span> We're here for you </span>
+            </div>
+          </div>
+
+          <div class="sidebar-user">
+            <div class="user-avatar">B</div>
+            <div class="user-information">
+              <strong> Brian </strong>
+              <span> Personal account </span>
+            </div>
+            <button class="icon-button" aria-label="User menu">
+              <i data-lucide="more-horizontal"></i>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ==========================================
+             MAIN APPLICATION
+             ========================================== -->
+      <main class="main-content">
+        <!-- ======================================
+                 TOPBAR
+                 ====================================== -->
+        <header class="topbar">
+          <div class="topbar-left">
+            <button
+              class="mobile-menu-button icon-button"
+              id="mobileMenuButton"
+              aria-label="Open navigation"
+            >
+              <i data-lucide="menu"></i>
+            </button>
+
+            <div class="breadcrumb">
+              <span> Expense Tracker </span>
+              <i data-lucide="chevron-right"></i>
+              <strong id="currentPageName"> Dashboard </strong>
+            </div>
+          </div>
+
+          <div class="topbar-actions">
+            <button class="icon-button" aria-label="Search">
+              <i data-lucide="search"></i>
+            </button>
+            <button
+              class="icon-button"
+              id="themeToggle"
+              aria-label="Toggle theme"
+            >
+              <i data-lucide="moon"></i>
+            </button>
+            <button class="notification-button" aria-label="Notifications">
+              <i data-lucide="bell"></i>
+              <span class="notification-dot"></span>
+            </button>
+            <div class="topbar-profile">
+              <div class="user-avatar">B</div>
+              <div>
+                <strong> Brian </strong>
+                <span> Personal </span>
+              </div>
+              <i data-lucide="chevron-down"></i>
+            </div>
+          </div>
+        </header>
+
+        <!-- ======================================
+             PAGE CONTENT (MULTIPLE PAGES)
+             ====================================== -->
+        <section class="page-content" id="pageContent">
+          <!-- ==========================================
+               DASHBOARD PAGE (ACTIVE BY DEFAULT)
+               ========================================== -->
+          <div class="app-page active" id="dashboardPage">
+            <!-- ==========================================
+                 DASHBOARD CONTENT
+                 ========================================== -->
+            <div class="dashboard">
+              <!-- DASHBOARD HEADER -->
+              <div class="page-header dashboard-header">
+                <div>
+                  <p class="page-eyebrow">OVERVIEW</p>
+                  <h1>Good evening, Brian 👋</h1>
+                  <p class="page-description">
+                    Here's what's happening with your finances.
+                  </p>
+                </div>
+                <button class="btn btn-primary" id="addTransactionButton">
+                  <i data-lucide="plus"></i>
+                  Add Transaction
+                </button>
+              </div>
+
+              <!-- SUMMARY CARDS -->
+              <div class="summary-grid">
+                <article class="summary-card balance-card">
+                  <div class="summary-card-top">
+                    <div>
+                      <p class="summary-label">Total Balance</p>
+                      <h2 class="summary-value">KES 59,765.00</h2>
+                    </div>
+                    <div class="icon-box icon-box-primary">
+                      <i data-lucide="wallet"></i>
+                    </div>
+                  </div>
+                  <div class="summary-footer">
+                    <span class="trend trend-positive">
+                      <i data-lucide="trending-up"></i>
+                      8.4%
+                    </span>
+                    <span> vs. last month </span>
+                  </div>
+                </article>
+
+                <article class="summary-card">
+                  <div class="summary-card-top">
+                    <div>
+                      <p class="summary-label">Total Income</p>
+                      <h2 class="summary-value">KES 85,000.00</h2>
+                    </div>
+                    <div class="icon-box icon-box-income">
+                      <i data-lucide="arrow-down-left"></i>
+                    </div>
+                  </div>
+                  <div class="summary-footer">
+                    <span class="trend trend-positive">
+                      <i data-lucide="trending-up"></i>
+                      12.5%
+                    </span>
+                    <span> vs. last month </span>
+                  </div>
+                </article>
+
+                <article class="summary-card">
+                  <div class="summary-card-top">
+                    <div>
+                      <p class="summary-label">Total Expenses</p>
+                      <h2 class="summary-value">KES 25,235.00</h2>
+                    </div>
+                    <div class="icon-box icon-box-expense">
+                      <i data-lucide="arrow-up-right"></i>
+                    </div>
+                  </div>
+                  <div class="summary-footer">
+                    <span class="trend trend-positive">
+                      <i data-lucide="trending-down"></i>
+                      4.2%
+                    </span>
+                    <span> vs. last month </span>
+                  </div>
+                </article>
+
+                <article class="summary-card">
+                  <div class="summary-card-top">
+                    <div>
+                      <p class="summary-label">Savings</p>
+                      <h2 class="summary-value">KES 59,765.00</h2>
+                    </div>
+                    <div class="icon-box icon-box-warning">
+                      <i data-lucide="piggy-bank"></i>
+                    </div>
+                  </div>
+                  <div class="summary-footer">
+                    <span class="trend trend-positive">
+                      <i data-lucide="trending-up"></i>
+                      6.8%
+                    </span>
+                    <span> savings rate </span>
+                  </div>
+                </article>
+              </div>
+
+              <!-- MAIN ANALYTICS ROW -->
+              <div class="dashboard-grid">
+                <section class="dashboard-card spending-card">
+                  <div class="dashboard-card-header">
+                    <div>
+                      <h3>Spending Overview</h3>
+                      <p>Your expenses over the last 6 months</p>
+                    </div>
+                    <select class="chart-select" id="spendingPeriod">
+                      <option>Last 6 months</option>
+                      <option>This year</option>
+                      <option>Last 12 months</option>
+                    </select>
+                  </div>
+                  <div class="chart-container">
+                    <canvas id="spendingChart"></canvas>
+                  </div>
+                </section>
+
+                <section class="dashboard-card category-card">
+                  <div class="dashboard-card-header">
+                    <div>
+                      <h3>Spending by Category</h3>
+                      <p>This month's expenses</p>
+                    </div>
+                    <button class="icon-button" aria-label="Category options">
+                      <i data-lucide="more-horizontal"></i>
+                    </button>
+                  </div>
+                  <div class="category-content">
+                    <div class="donut-container">
+                      <canvas id="categoryChart"></canvas>
+                      <div class="donut-center">
+                        <strong> KES 25.2K </strong>
+                        <span> Total spent </span>
+                      </div>
+                    </div>
+                    <div class="category-list">
+                      <div class="category-item">
+                        <div class="category-name">
+                          <span class="category-dot category-food"></span>
+                          <span> Food </span>
+                        </div>
+                        <strong> KES 6,584 </strong>
+                      </div>
+                      <div class="category-item">
+                        <div class="category-name">
+                          <span class="category-dot category-transport"></span>
+                          <span> Transport </span>
+                        </div>
+                        <strong> KES 4,250 </strong>
+                      </div>
+                      <div class="category-item">
+                        <div class="category-name">
+                          <span class="category-dot category-shopping"></span>
+                          <span> Shopping </span>
+                        </div>
+                        <strong> KES 5,100 </strong>
+                      </div>
+                      <div class="category-item">
+                        <div class="category-name">
+                          <span
+                            class="category-dot category-entertainment"
+                          ></span>
+                          <span> Entertainment </span>
+                        </div>
+                        <strong> KES 2,100 </strong>
+                      </div>
+                      <div class="category-item">
+                        <div class="category-name">
+                          <span class="category-dot category-other"></span>
+                          <span> Other </span>
+                        </div>
+                        <strong> KES 7,201 </strong>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+
+              <!-- RECENT TRANSACTIONS -->
+              <section class="dashboard-card transactions-card">
+                <div class="dashboard-card-header">
+                  <div>
+                    <h3>Recent Transactions</h3>
+                    <p>Your latest financial activity</p>
+                  </div>
+                  <button class="btn btn-secondary" id="viewAllTransactions">
+                    View all
+                    <i data-lucide="arrow-right"></i>
+                  </button>
+                </div>
+                <div class="transaction-list">
+                  <div class="transaction-item">
+                    <div class="transaction-main">
+                      <div class="transaction-icon food-icon">
+                        <i data-lucide="utensils"></i>
+                      </div>
+                      <div class="transaction-information">
+                        <strong> Lunch </strong>
+                        <span> Food · Today </span>
+                      </div>
+                    </div>
+                    <strong class="transaction-expense"> - KES 450.00 </strong>
+                  </div>
+                  <div class="transaction-item">
+                    <div class="transaction-main">
+                      <div class="transaction-icon transport-icon">
+                        <i data-lucide="car-front"></i>
+                      </div>
+                      <div class="transaction-information">
+                        <strong> Uber </strong>
+                        <span> Transport · Yesterday </span>
+                      </div>
+                    </div>
+                    <strong class="transaction-expense"> - KES 750.00 </strong>
+                  </div>
+                  <div class="transaction-item">
+                    <div class="transaction-main">
+                      <div class="transaction-icon shopping-icon">
+                        <i data-lucide="shopping-bag"></i>
+                      </div>
+                      <div class="transaction-information">
+                        <strong> New Shoes </strong>
+                        <span> Shopping · Aug 12 </span>
+                      </div>
+                    </div>
+                    <strong class="transaction-expense">
+                      - KES 3,500.00
+                    </strong>
+                  </div>
+                  <div class="transaction-item">
+                    <div class="transaction-main">
+                      <div class="transaction-icon income-icon">
+                        <i data-lucide="briefcase-business"></i>
+                      </div>
+                      <div class="transaction-information">
+                        <strong> Monthly Salary </strong>
+                        <span> Income · Aug 1 </span>
+                      </div>
+                    </div>
+                    <strong class="transaction-income">
+                      + KES 85,000.00
+                    </strong>
+                  </div>
+                  <div class="transaction-item">
+                    <div class="transaction-main">
+                      <div class="transaction-icon entertainment-icon">
+                        <i data-lucide="gamepad-2"></i>
+                      </div>
+                      <div class="transaction-information">
+                        <strong> Gaming </strong>
+                        <span> Entertainment · Jul 30 </span>
+                      </div>
+                    </div>
+                    <strong class="transaction-expense">
+                      - KES 1,200.00
+                    </strong>
+                  </div>
+                </div>
+              </section>
+            </div>
+            <!-- END dashboard content -->
+          </div>
+          <!-- END dashboardPage -->
+
+          <!-- ==========================================
+               TRANSACTIONS PAGE
+               ========================================== -->
+          <div class="app-page" id="transactionsPage">
+            <!-- Page Header -->
+            <div class="page-header">
+              <div>
+                <p class="page-eyebrow">TRANSACTIONS</p>
+                <h1>Transactions</h1>
+                <p class="page-description">
+                  Track and manage your income and expenses.
+                </p>
+              </div>
+              <button class="btn btn-primary" id="transactionsAddButton">
+                <i data-lucide="plus"></i>
+                Add Transaction
+              </button>
+            </div>
+
+            <!-- Statistics -->
+            <div class="transaction-stat-grid">
+              <div class="transaction-stat-card">
+                <div class="transaction-stat-icon">
+                  <i data-lucide="arrow-down-left"></i>
+                </div>
+                <div>
+                  <span> Total Income </span>
+                  <strong> KES 85,000 </strong>
+                </div>
+              </div>
+              <div class="transaction-stat-card">
+                <div class="transaction-stat-icon expense-stat-icon">
+                  <i data-lucide="arrow-up-right"></i>
+                </div>
+                <div>
+                  <span> Total Expenses </span>
+                  <strong> KES 25,235 </strong>
+                </div>
+              </div>
+              <div class="transaction-stat-card">
+                <div class="transaction-stat-icon balance-stat-icon">
+                  <i data-lucide="wallet"></i>
+                </div>
+                <div>
+                  <span> Net Balance </span>
+                  <strong> KES 59,765 </strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Transactions Card -->
+            <section class="dashboard-card transactions-management-card">
+              <!-- Filters -->
+              <div class="transaction-toolbar">
+                <div class="transaction-search">
+                  <i data-lucide="search"></i>
+                  <input
+                    type="search"
+                    id="transactionSearch"
+                    placeholder="Search transactions..."
+                    autocomplete="off"
+                  />
+                </div>
+                <div class="transaction-filters">
+                  <select id="transactionTypeFilter" class="filter-select">
+                    <option value="all">All types</option>
+                    <option value="income">Income</option>
+                    <option value="expense">Expenses</option>
+                  </select>
+                  <select id="transactionCategoryFilter" class="filter-select">
+                    <option value="all">All categories</option>
+                    <option value="food">Food</option>
+                    <option value="transport">Transport</option>
+                    <option value="shopping">Shopping</option>
+                    <option value="entertainment">Entertainment</option>
+                    <option value="bills">Bills & Utilities</option>
+                    <option value="health">Health</option>
+                    <option value="education">Education</option>
+                    <option value="other">Other</option>
+                  </select>
+                  <button class="filter-button" id="clearTransactionFilters">
+                    <i data-lucide="rotate-ccw"></i>
+                    Reset
+                  </button>
+                </div>
+              </div>
+
+              <!-- Table -->
+              <div class="transactions-table-wrapper">
+                <table class="transactions-table">
+                  <thead>
+                    <tr>
+                      <th>Transaction</th>
+                      <th>Category</th>
+                      <th>Date</th>
+                      <th>Type</th>
+                      <th class="amount-column">Amount</th>
+                      <th class="actions-column">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="transactionsTableBody"></tbody>
+                </table>
+
+                <!-- Empty State -->
+                <div class="transactions-empty" id="transactionsEmpty">
+                  <div class="empty-icon">
+                    <i data-lucide="search-x"></i>
+                  </div>
+                  <h3>No transactions found</h3>
+                  <p>Try changing your search or filters.</p>
+                </div>
+              </div>
+
+              <!-- Table Footer -->
+              <div class="transactions-footer">
+                <span id="transactionResultCount"> Showing 0 transactions </span>
+                <div class="pagination">
+                  <button
+                    class="pagination-button"
+                    disabled
+                    aria-label="Previous page"
+                  >
+                    <i data-lucide="chevron-left"></i>
+                  </button>
+                  <button class="pagination-button active">1</button>
+                  <button
+                    class="pagination-button"
+                    aria-label="Next page"
+                  >
+                    <i data-lucide="chevron-right"></i>
+                  </button>
+                </div>
+              </div>
+            </section>
+          </div>
+          <!-- END transactionsPage -->
+
+          <!-- ==========================================
+               ANALYTICS PAGE
+               ========================================== -->
+          <div class="app-page" id="analyticsPage">
+            <!-- Page Header -->
+            <div class="page-header">
+              <div>
+                <p class="page-eyebrow">FINANCIAL INSIGHTS</p>
+                <h1>Analytics</h1>
+                <p class="page-description">
+                  Understand where your money goes and how your finances are changing.
+                </p>
+              </div>
+              <div class="analytics-period">
+                <button class="period-button active" data-period="month">
+                  This Month
+                </button>
+                <button class="period-button" data-period="year">
+                  This Year
+                </button>
+              </div>
+            </div>
+
+            <!-- Analytics Summary -->
+            <div class="analytics-summary-grid">
+              <!-- Income -->
+              <div class="analytics-summary-card">
+                <div class="analytics-summary-top">
+                  <div class="analytics-summary-icon income-icon">
+                    <i data-lucide="trending-up"></i>
+                  </div>
+                  <span class="analytics-change positive">+12.5%</span>
+                </div>
+                <span class="analytics-label">Total Income</span>
+                <strong class="analytics-value">KES 100,000</strong>
+                <span class="analytics-description">Compared with last month</span>
+              </div>
+
+              <!-- Expenses -->
+              <div class="analytics-summary-card">
+                <div class="analytics-summary-top">
+                  <div class="analytics-summary-icon expense-icon">
+                    <i data-lucide="trending-down"></i>
+                  </div>
+                  <span class="analytics-change negative">+8.2%</span>
+                </div>
+                <span class="analytics-label">Total Expenses</span>
+                <strong class="analytics-value">KES 25,235</strong>
+                <span class="analytics-description">Compared with last month</span>
+              </div>
+
+              <!-- Savings -->
+              <div class="analytics-summary-card">
+                <div class="analytics-summary-top">
+                  <div class="analytics-summary-icon savings-icon">
+                    <i data-lucide="piggy-bank"></i>
+                  </div>
+                  <span class="analytics-change positive">+4.8%</span>
+                </div>
+                <span class="analytics-label">Savings</span>
+                <strong class="analytics-value">KES 74,765</strong>
+                <span class="analytics-description">74.8% of your income</span>
+              </div>
+
+              <!-- Daily Average -->
+              <div class="analytics-summary-card">
+                <div class="analytics-summary-top">
+                  <div class="analytics-summary-icon average-icon">
+                    <i data-lucide="calendar-days"></i>
+                  </div>
+                </div>
+                <span class="analytics-label">Daily Average</span>
+                <strong class="analytics-value">KES 814</strong>
+                <span class="analytics-description">Average daily spending</span>
+              </div>
+            </div>
+
+            <!-- Main Analytics Grid -->
+            <div class="analytics-grid">
+              <!-- Spending Trend -->
+              <section class="dashboard-card analytics-large-card">
+                <div class="card-header">
+                  <div>
+                    <h2>Spending Trend</h2>
+                    <p>Your spending throughout the month</p>
+                  </div>
+                  <div class="chart-legend">
+                    <span class="legend-item">
+                      <span class="legend-dot expense-dot"></span>
+                      Expenses
+                    </span>
+                    <span class="legend-item">
+                      <span class="legend-dot income-dot"></span>
+                      Income
+                    </span>
+                  </div>
+                </div>
+                <div class="analytics-chart-container">
+                  <canvas id="analyticsTrendChart"></canvas>
+                </div>
+              </section>
+
+              <!-- Category Breakdown -->
+              <section class="dashboard-card analytics-category-card">
+                <div class="card-header">
+                  <div>
+                    <h2>Spending by Category</h2>
+                    <p>Where your money is going</p>
+                  </div>
+                </div>
+                <div class="analytics-category-content">
+                  <div class="category-donut-container">
+                    <canvas id="analyticsCategoryChart"></canvas>
+                  </div>
+                  <div class="analytics-category-list" id="analyticsCategoryList"></div>
+                </div>
+              </section>
+            </div>
+
+            <!-- Financial Insights -->
+            <section class="dashboard-card insights-card">
+              <div class="card-header">
+                <div>
+                  <h2>Financial Insights</h2>
+                  <p>A quick look at your financial habits</p>
+                </div>
+                <div class="insight-header-icon">
+                  <i data-lucide="sparkles"></i>
+                </div>
+              </div>
+
+              <div class="insights-grid">
+                <!-- Insight 1 -->
+                <div class="insight-item">
+                  <div class="insight-icon">
+                    <i data-lucide="utensils"></i>
+                  </div>
+                  <div>
+                    <span class="insight-title">Biggest category</span>
+                    <strong>Food & Dining</strong>
+                    <p>You spent KES 8,450 on food this month.</p>
+                  </div>
+                </div>
+
+                <!-- Insight 2 -->
+                <div class="insight-item">
+                  <div class="insight-icon">
+                    <i data-lucide="target"></i>
+                  </div>
+                  <div>
+                    <span class="insight-title">Savings rate</span>
+                    <strong>74.8%</strong>
+                    <p>You're saving more than you spend.</p>
+                  </div>
+                </div>
+
+                <!-- Insight 3 -->
+                <div class="insight-item">
+                  <div class="insight-icon">
+                    <i data-lucide="lightbulb"></i>
+                  </div>
+                  <div>
+                    <span class="insight-title">Spending tip</span>
+                    <strong>Watch entertainment</strong>
+                    <p>Entertainment spending increased this month.</p>
+                  </div>
+                </div>
+
+                <!-- Insight 4 -->
+                <div class="insight-item">
+                  <div class="insight-icon">
+                    <i data-lucide="shield-check"></i>
+                  </div>
+                  <div>
+                    <span class="insight-title">Financial health</span>
+                    <strong>Looking good</strong>
+                    <p>Your current income comfortably covers your expenses.</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+          <!-- END analyticsPage -->
+
+          <!-- Additional pages (categories, settings) can be added here later -->
+        <!-- ==========================================
+     CATEGORIES PAGE
+     ========================================== -->
+
+<div
+    class="app-page"
+    id="categoriesPage"
+>
+
+    <!-- Page Header -->
+
+    <div class="page-header">
+
+        <div>
+
+            <p class="page-eyebrow">
+                ORGANIZE YOUR MONEY
+            </p>
+
+            <h1>
+                Categories
+            </h1>
+
+            <p class="page-description">
+                Organize your transactions and understand your spending habits.
+            </p>
+
+        </div>
+
+
+        <button
+            class="btn btn-primary"
+            id="addCategoryButton"
+        >
+
+            <i data-lucide="plus"></i>
+
+            Add Category
+
+        </button>
+
+    </div>
+
+
+    <!-- ==========================================
+         CATEGORY SEARCH
+         ========================================== -->
+
+    <div class="category-toolbar">
+
+        <div class="category-search">
+
+            <i data-lucide="search"></i>
+
+            <input
+                type="search"
+                id="categorySearch"
+                placeholder="Search categories..."
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <div class="category-total">
+
+            <span>
+                Total Categories
+            </span>
+
+            <strong id="categoryCount">
+                8
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         CATEGORY GRID
+         ========================================== -->
+
+    <div
+        class="categories-grid"
+        id="categoriesGrid"
+    >
+    </div>
+
+
+    <!-- ==========================================
+         CATEGORY EMPTY STATE
+         ========================================== -->
+
+    <div
+        class="categories-empty"
+        id="categoriesEmpty"
+    >
+
+        <div class="empty-icon">
+
+            <i data-lucide="tags"></i>
+
+        </div>
+
+
+        <h3>
+            No categories found
+        </h3>
+
+
+        <p>
+            Try another search term or create a new category.
+        </p>
+
+
+        <button
+            class="btn btn-primary"
+            id="emptyAddCategoryButton"
+        >
+
+            <i data-lucide="plus"></i>
+
+            Add Category
+
+        </button>
+
+    </div>
+
+
+    <!-- ==========================================
+         CATEGORY MODAL
+         ========================================== -->
+
+    <div
+        class="modal-overlay"
+        id="categoryModal"
+        aria-hidden="true"
+    >
+
+        <div
+            class="modal category-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="categoryModalTitle"
+        >
+
+            <div class="modal-header">
+
+                <div>
+
+                    <p class="modal-eyebrow">
+                        CATEGORY
+                    </p>
+
+                    <h2 id="categoryModalTitle">
+                        Add Category
+                    </h2>
+
+                </div>
+
+
+                <button
+                    class="modal-close"
+                    id="closeCategoryModal"
+                    type="button"
+                    aria-label="Close"
+                >
+
+                    <i data-lucide="x"></i>
+
+                </button>
+
+            </div>
+
+
+            <form id="categoryForm">
+
+                <div class="form-group">
+
+                    <label for="categoryName">
+                        Category Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="categoryName"
+                        name="categoryName"
+                        placeholder="e.g. Travel"
+                        maxlength="40"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="categoryDescription">
+                        Description
+                    </label>
+
+                    <textarea
+                        id="categoryDescription"
+                        name="categoryDescription"
+                        placeholder="What is this category used for?"
+                        rows="3"
+                        maxlength="120"
+                    ></textarea>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Icon
+                    </label>
+
+
+                    <div
+                        class="category-icon-picker"
+                        id="categoryIconPicker"
+                    >
+
+                        <button
+                            type="button"
+                            class="category-icon-option active"
+                            data-icon="tag"
+                        >
+                            <i data-lucide="tag"></i>
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="category-icon-option"
+                            data-icon="plane"
+                        >
+                            <i data-lucide="plane"></i>
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="category-icon-option"
+                            data-icon="heart-pulse"
+                        >
+                            <i data-lucide="heart-pulse"></i>
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="category-icon-option"
+                            data-icon="book-open"
+                        >
+                            <i data-lucide="book-open"></i>
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="category-icon-option"
+                            data-icon="coffee"
+                        >
+                            <i data-lucide="coffee"></i>
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="category-icon-option"
+                            data-icon="gift"
+                        >
+                            <i data-lucide="gift"></i>
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="category-icon-option"
+                            data-icon="music"
+                        >
+                            <i data-lucide="music"></i>
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="category-icon-option"
+                            data-icon="briefcase-business"
+                        >
+                            <i data-lucide="briefcase-business"></i>
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        id="cancelCategoryButton"
+                    >
+                        Cancel
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+
+                        <i data-lucide="check"></i>
+
+                        Save Category
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- END categoriesPage -->
+ <!-- ==========================================
+         SETTINGS PAGE
+         ========================================== -->
+
+         <!-- ==========================================
+     SETTINGS PAGE
+     ========================================== -->
+
+<div
+    class="app-page"
+    id="settingsPage"
+>
+
+    <!-- ==========================================
+         PAGE HEADER
+         ========================================== -->
+
+    <div class="page-header">
+
+        <div>
+
+            <p class="page-eyebrow">
+                PREFERENCES
+            </p>
+
+            <h1>
+                Settings
+            </h1>
+
+            <p class="page-description">
+                Manage your account and customize your Expense Tracker experience.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         SETTINGS LAYOUT
+         ========================================== -->
+
+    <div class="settings-layout">
+
+
+        <!-- ======================================
+             SETTINGS SIDEBAR
+             ====================================== -->
+
+        <aside class="settings-sidebar">
+
+            <button
+                class="settings-nav-item active"
+                data-settings-section="profile"
+            >
+
+                <i data-lucide="user"></i>
+
+                <span>
+                    Profile
+                </span>
+
+            </button>
+
+
+            <button
+                class="settings-nav-item"
+                data-settings-section="appearance"
+            >
+
+                <i data-lucide="palette"></i>
+
+                <span>
+                    Appearance
+                </span>
+
+            </button>
+
+
+            <button
+                class="settings-nav-item"
+                data-settings-section="preferences"
+            >
+
+                <i data-lucide="sliders-horizontal"></i>
+
+                <span>
+                    Preferences
+                </span>
+
+            </button>
+
+
+            <button
+                class="settings-nav-item"
+                data-settings-section="notifications"
+            >
+
+                <i data-lucide="bell"></i>
+
+                <span>
+                    Notifications
+                </span>
+
+            </button>
+
+
+            <button
+                class="settings-nav-item"
+                data-settings-section="security"
+            >
+
+                <i data-lucide="shield"></i>
+
+                <span>
+                    Security
+                </span>
+
+            </button>
+
+
+            <button
+                class="settings-nav-item danger"
+                data-settings-section="danger"
+            >
+
+                <i data-lucide="triangle-alert"></i>
+
+                <span>
+                    Danger Zone
+                </span>
+
+            </button>
+
+        </aside>
+
+
+        <!-- ======================================
+             SETTINGS CONTENT
+             ====================================== -->
+
+        <div class="settings-content">
+
+
+            <!-- ==================================
+                 PROFILE
+                 ================================== -->
+
+            <section
+                class="settings-section active"
+                id="settings-profile"
+            >
+
+                <div class="settings-section-header">
+
+                    <div>
+
+                        <h2>
+                            Profile
+                        </h2>
+
+                        <p>
+                            Update your personal information.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="settings-card">
+
+                    <div class="profile-settings-header">
+
+                        <div class="profile-avatar-large">
+
+                            <span id="settingsAvatar">
+                                BI
+                            </span>
+
+                        </div>
+
+
+                        <div>
+
+                            <h3>
+                                Profile picture
+                            </h3>
+
+                            <p>
+                                Your initials are currently being used as your profile image.
+                            </p>
+
+                        </div>
+
+
+                        <button
+                            class="btn btn-secondary"
+                            type="button"
+                            id="changeAvatarButton"
+                        >
+
+                            <i data-lucide="image"></i>
+
+                            Change
+
+                        </button>
+
+                    </div>
+
+
+                    <div class="settings-form-grid">
+
+                        <div class="form-group">
+
+                            <label for="settingsName">
+                                Full Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="settingsName"
+                                value="Brian"
+                                placeholder="Your name"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="settingsEmail">
+                                Email Address
+                            </label>
+
+                            <input
+                                type="email"
+                                id="settingsEmail"
+                                value="brian@example.com"
+                                placeholder="you@example.com"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="settings-save-row">
+
+                        <button
+                            class="btn btn-primary"
+                            type="button"
+                            id="saveProfileButton"
+                        >
+
+                            <i data-lucide="save"></i>
+
+                            Save Changes
+
+                        </button>
+
+                        <span
+                            class="save-status"
+                            id="profileSaveStatus"
+                        ></span>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==================================
+                 APPEARANCE
+                 ================================== -->
+
+            <section
+                class="settings-section"
+                id="settings-appearance"
+            >
+
+                <div class="settings-section-header">
+
+                    <div>
+
+                        <h2>
+                            Appearance
+                        </h2>
+
+                        <p>
+                            Customize how Expense Tracker looks.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="settings-card">
+
+                    <div class="settings-option">
+
+                        <div class="settings-option-icon">
+
+                            <i data-lucide="moon"></i>
+
+                        </div>
+
+
+                        <div class="settings-option-content">
+
+                            <strong>
+                                Dark Mode
+                            </strong>
+
+                            <span>
+                                Use a darker appearance that's easier on the eyes.
+                            </span>
+
+                        </div>
+
+
+                        <label class="switch">
+
+                            <input
+                                type="checkbox"
+                                id="settingsDarkMode"
+                            >
+
+                            <span class="switch-slider"></span>
+
+                        </label>
+
+                    </div>
+
+
+                    <div class="settings-divider"></div>
+
+
+                    <div class="settings-option">
+
+                        <div class="settings-option-icon">
+
+                            <i data-lucide="monitor"></i>
+
+                        </div>
+
+
+                        <div class="settings-option-content">
+
+                            <strong>
+                                Compact Layout
+                            </strong>
+
+                            <span>
+                                Reduce spacing between cards and controls.
+                            </span>
+
+                        </div>
+
+
+                        <label class="switch">
+
+                            <input
+                                type="checkbox"
+                                id="compactLayout"
+                            >
+
+                            <span class="switch-slider"></span>
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==================================
+                 PREFERENCES
+                 ================================== -->
+
+            <section
+                class="settings-section"
+                id="settings-preferences"
+            >
+
+                <div class="settings-section-header">
+
+                    <div>
+
+                        <h2>
+                            Preferences
+                        </h2>
+
+                        <p>
+                            Control how financial information is displayed.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="settings-card">
+
+                    <div class="settings-form-grid">
+
+                        <div class="form-group">
+
+                            <label for="currencySelect">
+                                Currency
+                            </label>
+
+                            <select
+                                id="currencySelect"
+                            >
+
+                                <option value="KES">
+                                    KES — Kenyan Shilling
+                                </option>
+
+                                <option value="USD">
+                                    USD — US Dollar
+                                </option>
+
+                                <option value="EUR">
+                                    EUR — Euro
+                                </option>
+
+                                <option value="GBP">
+                                    GBP — British Pound
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="dateFormat">
+                                Date Format
+                            </label>
+
+                            <select
+                                id="dateFormat"
+                            >
+
+                                <option value="dd/mm/yyyy">
+                                    DD/MM/YYYY
+                                </option>
+
+                                <option value="mm/dd/yyyy">
+                                    MM/DD/YYYY
+                                </option>
+
+                                <option value="yyyy-mm-dd">
+                                    YYYY-MM-DD
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="startOfWeek">
+                                Start of Week
+                            </label>
+
+                            <select
+                                id="startOfWeek"
+                            >
+
+                                <option value="monday">
+                                    Monday
+                                </option>
+
+                                <option value="sunday">
+                                    Sunday
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="decimalPlaces">
+                                Decimal Places
+                            </label>
+
+                            <select
+                                id="decimalPlaces"
+                            >
+
+                                <option value="0">
+                                    0
+                                </option>
+
+                                <option value="2">
+                                    2
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="settings-save-row">
+
+                        <button
+                            class="btn btn-primary"
+                            type="button"
+                            id="savePreferencesButton"
+                        >
+
+                            <i data-lucide="save"></i>
+
+                            Save Preferences
+
+                        </button>
+
+                        <span
+                            class="save-status"
+                            id="preferencesSaveStatus"
+                        ></span>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==================================
+                 NOTIFICATIONS
+                 ================================== -->
+
+            <section
+                class="settings-section"
+                id="settings-notifications"
+            >
+
+                <div class="settings-section-header">
+
+                    <div>
+
+                        <h2>
+                            Notifications
+                        </h2>
+
+                        <p>
+                            Choose which reminders and updates you receive.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="settings-card">
+
+                    <div class="settings-option">
+
+                        <div class="settings-option-icon">
+
+                            <i data-lucide="bell"></i>
+
+                        </div>
+
+
+                        <div class="settings-option-content">
+
+                            <strong>
+                                Expense Reminders
+                            </strong>
+
+                            <span>
+                                Receive reminders to record your expenses.
+                            </span>
+
+                        </div>
+
+
+                        <label class="switch">
+
+                            <input
+                                type="checkbox"
+                                id="expenseReminders"
+                                checked
+                            >
+
+                            <span class="switch-slider"></span>
+
+                        </label>
+
+                    </div>
+
+
+                    <div class="settings-divider"></div>
+
+
+                    <div class="settings-option">
+
+                        <div class="settings-option-icon">
+
+                            <i data-lucide="target"></i>
+
+                        </div>
+
+
+                        <div class="settings-option-content">
+
+                            <strong>
+                                Budget Alerts
+                            </strong>
+
+                            <span>
+                                Get notified when you're approaching a budget limit.
+                            </span>
+
+                        </div>
+
+
+                        <label class="switch">
+
+                            <input
+                                type="checkbox"
+                                id="budgetAlerts"
+                                checked
+                            >
+
+                            <span class="switch-slider"></span>
+
+                        </label>
+
+                    </div>
+
+
+                    <div class="settings-divider"></div>
+
+
+                    <div class="settings-option">
+
+                        <div class="settings-option-icon">
+
+                            <i data-lucide="bar-chart-3"></i>
+
+                        </div>
+
+
+                        <div class="settings-option-content">
+
+                            <strong>
+                                Weekly Summary
+                            </strong>
+
+                            <span>
+                                Receive a weekly summary of your finances.
+                            </span>
+
+                        </div>
+
+
+                        <label class="switch">
+
+                            <input
+                                type="checkbox"
+                                id="weeklySummary"
+                                checked
+                            >
+
+                            <span class="switch-slider"></span>
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==================================
+                 SECURITY
+                 ================================== -->
+
+            <section
+                class="settings-section"
+                id="settings-security"
+            >
+
+                <div class="settings-section-header">
+
+                    <div>
+
+                        <h2>
+                            Security
+                        </h2>
+
+                        <p>
+                            Manage your account security.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="settings-card">
+
+                    <div class="settings-option">
+
+                        <div class="settings-option-icon">
+
+                            <i data-lucide="lock-keyhole"></i>
+
+                        </div>
+
+
+                        <div class="settings-option-content">
+
+                            <strong>
+                                Password
+                            </strong>
+
+                            <span>
+                                Change your account password.
+                            </span>
+
+                        </div>
+
+
+                        <button
+                            class="btn btn-secondary"
+                            type="button"
+                            id="changePasswordButton"
+                        >
+
+                            Change
+
+                        </button>
+
+                    </div>
+
+
+                    <div class="settings-divider"></div>
+
+
+                    <div class="settings-option">
+
+                        <div class="settings-option-icon">
+
+                            <i data-lucide="log-out"></i>
+
+                        </div>
+
+
+                        <div class="settings-option-content">
+
+                            <strong>
+                                Sign out
+                            </strong>
+
+                            <span>
+                                Sign out of your Expense Tracker account.
+                            </span>
+
+                        </div>
+
+
+                        <button
+                            class="btn btn-secondary"
+                            type="button"
+                            id="logoutButton"
+                        >
+
+                            Sign Out
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==================================
+                 DANGER ZONE
+                 ================================== -->
+
+            <section
+                class="settings-section"
+                id="settings-danger"
+            >
+
+                <div class="settings-section-header">
+
+                    <div>
+
+                        <h2>
+                            Danger Zone
+                        </h2>
+
+                        <p>
+                            Actions in this section can permanently affect your data.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="settings-card danger-card">
+
+                    <div class="danger-option">
+
+                        <div>
+
+                            <strong>
+                                Delete all transactions
+                            </strong>
+
+                            <p>
+                                Permanently remove every transaction from your account.
+                            </p>
+
+                        </div>
+
+
+                        <button
+                            class="btn btn-danger"
+                            type="button"
+                            id="deleteTransactionsButton"
+                        >
+
+                            <i data-lucide="trash-2"></i>
+
+                            Delete Data
+
+                        </button>
+
+                    </div>
+
+
+                    <div class="settings-divider"></div>
+
+
+                    <div class="danger-option">
+
+                        <div>
+
+                            <strong>
+                                Delete account
+                            </strong>
+
+                            <p>
+                                Permanently delete your Expense Tracker account and associated data.
+                            </p>
+
+                        </div>
+
+
+                        <button
+                            class="btn btn-danger"
+                            type="button"
+                            id="deleteAccountButton"
+                        >
+
+                            Delete Account
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- END settingsPage -->
+ <!-- ==========================================
+         END ADDITIONAL PAGES
+         ========================================== -->
+        </section>
+        <!-- END pageContent -->
+      </main>
+    </div>
+
+    <!-- ==========================================
+         MOBILE BOTTOM NAVIGATION
+         ========================================== -->
+    <nav class="mobile-bottom-navigation">
+      <a href="#" class="mobile-navigation-item active" data-page="dashboard">
+        <i data-lucide="house"></i>
+        <span> Home </span>
+      </a>
+      <a href="#" class="mobile-navigation-item" data-page="transactions">
+        <i data-lucide="receipt-text"></i>
+        <span> Transactions </span>
+      </a>
+      <button class="mobile-add-button" aria-label="Add transaction">
+        <i data-lucide="plus"></i>
+      </button>
+      <a href="#" class="mobile-navigation-item" data-page="analytics">
+        <i data-lucide="chart-pie"></i>
+        <span> Analytics </span>
+      </a>
+      <a href="#" class="mobile-navigation-item" data-page="settings">
+        <i data-lucide="user-round"></i>
+        <span> Profile </span>
+      </a>
+    </nav>
+
+    <!-- ==========================================
+         ADD TRANSACTION MODAL
+         ========================================== -->
+    <div class="modal-overlay" id="transactionModal" aria-hidden="true">
+      <div
+        class="transaction-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="transactionModalTitle"
+      >
+        <div class="modal-header">
+          <div>
+            <p class="modal-eyebrow">TRANSACTION</p>
+            <h2 id="transactionModalTitle">Add Transaction</h2>
+            <p class="modal-description">Record a new income or expense.</p>
+          </div>
+          <button
+            type="button"
+            class="modal-close"
+            id="closeTransactionModal"
+            aria-label="Close transaction form"
+          >
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+
+        <form id="transactionForm" class="transaction-form">
+          <div class="form-group">
+            <label> Transaction Type </label>
+            <div class="transaction-type-selector">
+              <button
+                type="button"
+                class="transaction-type active"
+                data-type="expense"
+              >
+                <span class="type-icon expense-type-icon">
+                  <i data-lucide="arrow-up-right"></i>
+                </span>
+                <span>
+                  <strong> Expense </strong>
+                  <small> Money spent </small>
+                </span>
+              </button>
+              <button type="button" class="transaction-type" data-type="income">
+                <span class="type-icon income-type-icon">
+                  <i data-lucide="arrow-down-left"></i>
+                </span>
+                <span>
+                  <strong> Income </strong>
+                  <small> Money received </small>
+                </span>
+              </button>
+            </div>
+            <input
+              type="hidden"
+              id="transactionType"
+              name="transactionType"
+              value="expense"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="transactionAmount"> Amount </label>
+            <div class="amount-input-wrapper">
+              <span class="currency-prefix"> KES </span>
+              <input
+                type="number"
+                id="transactionAmount"
+                name="amount"
+                placeholder="0.00"
+                min="0"
+                step="0.01"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="transactionCategory"> Category </label>
+            <div class="select-wrapper">
+              <select id="transactionCategory" name="category" required>
+                <option value="">Select a category</option>
+                <option value="food">Food</option>
+                <option value="transport">Transport</option>
+                <option value="shopping">Shopping</option>
+                <option value="entertainment">Entertainment</option>
+                <option value="bills">Bills & Utilities</option>
+                <option value="health">Health</option>
+                <option value="education">Education</option>
+                <option value="other">Other</option>
+              </select>
+              <i data-lucide="chevron-down"></i>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="transactionDescription">
+              Description
+              <span class="optional"> Optional </span>
+            </label>
+            <input
+              type="text"
+              id="transactionDescription"
+              name="description"
+              placeholder="e.g. Lunch with friends"
+              maxlength="100"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="transactionDate"> Date </label>
+            <div class="date-input-wrapper">
+              <input type="date" id="transactionDate" name="date" required />
+              <i data-lucide="calendar-days"></i>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              id="cancelTransaction"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-primary">
+              <i data-lucide="check"></i>
+              Save Transaction
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Application JavaScript -->
+    <script src="assets/js/app.js"></script>
+  </body>
+</html>
