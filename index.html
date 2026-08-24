@@ -2030,7 +2030,8 @@
 
         <form id="transactionForm" class="transaction-form">
           <div class="form-group">
-            <label> Transaction Type </label>
+            <label>Transaction Type</label>
+
             <div class="transaction-type-selector">
               <button
                 type="button"
@@ -2040,21 +2041,29 @@
                 <span class="type-icon expense-type-icon">
                   <i data-lucide="arrow-up-right"></i>
                 </span>
+
                 <span>
-                  <strong> Expense </strong>
-                  <small> Money spent </small>
+                  <strong>Expense</strong>
+                  <small>Money spent</small>
                 </span>
               </button>
-              <button type="button" class="transaction-type" data-type="income">
+
+              <button
+                type="button"
+                class="transaction-type"
+                data-type="income"
+              >
                 <span class="type-icon income-type-icon">
                   <i data-lucide="arrow-down-left"></i>
                 </span>
+
                 <span>
-                  <strong> Income </strong>
-                  <small> Money received </small>
+                  <strong>Income</strong>
+                  <small>Money received</small>
                 </span>
               </button>
             </div>
+
             <input
               type="hidden"
               id="transactionType"
@@ -2063,10 +2072,26 @@
             />
           </div>
 
+          <!-- TITLE -->
           <div class="form-group">
-            <label for="transactionAmount"> Amount </label>
+            <label for="transactionTitle">Title</label>
+            <input
+              type="text"
+              id="transactionTitle"
+              name="title"
+              placeholder="e.g. Grocery Shopping"
+              maxlength="100"
+              required
+            />
+          </div>
+
+          <!-- AMOUNT -->
+          <div class="form-group">
+            <label for="transactionAmount">Amount</label>
+
             <div class="amount-input-wrapper">
-              <span class="currency-prefix"> KES </span>
+              <span class="currency-prefix">KES</span>
+
               <input
                 type="number"
                 id="transactionAmount"
@@ -2079,10 +2104,16 @@
             </div>
           </div>
 
+          <!-- CATEGORY -->
           <div class="form-group">
-            <label for="transactionCategory"> Category </label>
+            <label for="transactionCategory">Category</label>
+
             <div class="select-wrapper">
-              <select id="transactionCategory" name="category" required>
+              <select
+                id="transactionCategory"
+                name="category"
+                required
+              >
                 <option value="">Select a category</option>
                 <option value="food">Food</option>
                 <option value="transport">Transport</option>
@@ -2093,15 +2124,18 @@
                 <option value="education">Education</option>
                 <option value="other">Other</option>
               </select>
+
               <i data-lucide="chevron-down"></i>
             </div>
           </div>
 
+          <!-- DESCRIPTION -->
           <div class="form-group">
             <label for="transactionDescription">
               Description
-              <span class="optional"> Optional </span>
+              <span class="optional">Optional</span>
             </label>
+
             <input
               type="text"
               id="transactionDescription"
@@ -2111,10 +2145,18 @@
             />
           </div>
 
+          <!-- DATE -->
           <div class="form-group">
-            <label for="transactionDate"> Date </label>
+            <label for="transactionDate">Date</label>
+
             <div class="date-input-wrapper">
-              <input type="date" id="transactionDate" name="date" required />
+              <input
+                type="date"
+                id="transactionDate"
+                name="date"
+                required
+              />
+
               <i data-lucide="calendar-days"></i>
             </div>
           </div>
@@ -2127,7 +2169,11 @@
             >
               Cancel
             </button>
-            <button type="submit" class="btn btn-primary">
+
+            <button
+              type="submit"
+              class="btn btn-primary"
+            >
               <i data-lucide="check"></i>
               Save Transaction
             </button>

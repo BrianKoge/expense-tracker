@@ -17,11 +17,397 @@ const AppState = {
 
     settings: {},
 
+    editingTransactionId: null,
+
     initialized: false
 
 };
 
+/* =====================================================
+   TRANSACTION STATE MANAGEMENT
+   ===================================================== */
 
+function generateTransactionId() {
+
+    return Date.now() +
+        Math.floor(Math.random() * 1000);
+
+}
+
+
+function createTransaction(transactionData) {
+
+    const transaction = {
+
+        id: generateTransactionId(),
+
+        title: transactionData.title,
+
+        amount: Number(
+            transactionData.amount
+        ),
+
+        type: transactionData.type,
+
+        category: transactionData.category,
+
+        date: transactionData.date,
+
+        description:
+            transactionData.description || ""
+
+    };
+
+
+    AppState.transactions.unshift(
+        transaction
+    );
+
+
+    saveAppState();
+
+
+    return transaction;
+
+}
+
+
+function updateTransaction(
+    transactionId,
+    transactionData
+) {
+
+    const index =
+        AppState.transactions.findIndex(
+            transaction =>
+                transaction.id === transactionId
+        );
+
+
+    if (index === -1) {
+
+        console.error(
+            "Transaction not found:",
+            transactionId
+        );
+
+        return false;
+
+    }
+
+
+    AppState.transactions[index] = {
+
+        ...AppState.transactions[index],
+
+        title: transactionData.title,
+
+        amount: Number(
+            transactionData.amount
+        ),
+
+        type: transactionData.type,
+
+        category: transactionData.category,
+
+        date: transactionData.date,
+
+        description:
+            transactionData.description || ""
+
+    };
+
+
+    saveAppState();
+
+
+    refreshTransactionUI();
+
+
+    return true;
+
+}
+
+function deleteTransaction(
+    transactionId
+) {
+
+    const confirmed =
+        window.confirm(
+            "Are you sure you want to delete this transaction?"
+        );
+
+
+    if (!confirmed) {
+        return false;
+    }
+
+
+    const originalLength =
+        AppState.transactions.length;
+
+
+    AppState.transactions =
+        AppState.transactions.filter(
+            transaction =>
+                transaction.id !== transactionId
+        );
+
+
+    if (
+        AppState.transactions.length ===
+        originalLength
+    ) {
+
+        return false;
+
+    }
+
+
+    saveAppState();
+
+
+    refreshTransactionUI();
+
+
+    return true;
+
+}
+
+
+
+/* =====================================================
+   TRANSACTION FORM
+   ===================================================== */
+
+function setupTransactionForm() {
+
+    const form =
+        document.getElementById(
+            "transactionForm"
+        );
+
+
+    if (!form) {
+
+        console.warn(
+            "Transaction form not found."
+        );
+
+        return;
+
+    }
+
+
+    form.addEventListener(
+        "submit",
+        event => {
+
+            event.preventDefault();
+
+
+            const title =
+                document.getElementById(
+                    "transactionTitle"
+                )?.value.trim();
+
+
+            const amount =
+                Number(
+                    document.getElementById(
+                        "transactionAmount"
+                    )?.value
+                );
+
+
+            const category =
+                document.getElementById(
+                    "transactionCategory"
+                )?.value;
+
+
+            const date =
+                document.getElementById(
+                    "transactionDate"
+                )?.value;
+
+
+            const description =
+                document.getElementById(
+                    "transactionDescription"
+                )?.value.trim();
+
+
+            const type =
+                document.getElementById(
+                    "transactionType"
+                )?.value;
+
+
+            if (!title) {
+
+                alert(
+                    "Please enter a transaction title."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                !amount ||
+                amount <= 0
+            ) {
+
+                alert(
+                    "Please enter a valid amount."
+                );
+
+                return;
+
+            }
+
+
+            if (!category) {
+
+                alert(
+                    "Please select a category."
+                );
+
+                return;
+
+            }
+
+
+            if (!date) {
+
+                alert(
+                    "Please select a date."
+                );
+
+                return;
+
+            }
+
+
+            if (!type) {
+
+                alert(
+                    "Please select a transaction type."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                AppState.editingTransactionId !==
+                null
+            ) {
+
+                updateTransaction(
+                    AppState.editingTransactionId,
+                    {
+                        title,
+                        amount,
+                        category,
+                        date,
+                        description,
+                        type
+                    }
+                );
+
+
+                AppState.editingTransactionId =
+                    null;
+
+            } else {
+
+                createTransaction({
+
+                    title,
+                    amount,
+                    category,
+                    date,
+                    description,
+                    type
+
+                });
+
+            }
+
+
+            form.reset();
+
+
+            closeTransactionModal();
+
+
+            refreshTransactionUI();
+
+        }
+    );
+
+}
+
+/* =====================================================
+   REFRESH TRANSACTION UI
+   ===================================================== */
+
+function refreshTransactionUI() {
+
+    if (
+        typeof renderTransactions ===
+        "function"
+    ) {
+
+        renderTransactions();
+
+    }
+
+
+    if (
+        typeof renderCategories ===
+        "function"
+    ) {
+
+        renderCategories();
+
+    }
+
+
+    if (
+        typeof createSpendingChart ===
+        "function"
+    ) {
+
+        createSpendingChart();
+
+    }
+
+
+    if (
+        typeof createCategoryChart ===
+        "function"
+    ) {
+
+        createCategoryChart();
+
+    }
+
+
+    if (
+        typeof updateDashboard ===
+        "function"
+    ) {
+
+        updateDashboard();
+
+    }
+
+}
 
 /* =====================================================
    ICON INITIALIZATION
@@ -391,6 +777,12 @@ function createSpendingChart() {
         return;
     }
 
+    const existingChart = Chart.getChart(canvas);
+
+    if (existingChart) {
+        existingChart.destroy();
+    }
+
 
     new Chart(canvas, {
 
@@ -544,6 +936,12 @@ function createCategoryChart() {
         return;
     }
 
+    const existingChart = Chart.getChart(canvas);
+
+    if (existingChart) {
+        existingChart.destroy();
+    }
+
 
     new Chart(canvas, {
 
@@ -616,6 +1014,32 @@ function createCategoryChart() {
    TRANSACTION MODAL
    ===================================================== */
 
+function openTransactionModal() {
+
+    const modal = document.getElementById("transactionModal");
+
+    if (!modal) {
+        return;
+    }
+
+    modal.classList.add("active");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.classList.add("modal-open");
+}
+
+function closeTransactionModal() {
+
+    const modal = document.getElementById("transactionModal");
+
+    if (!modal) {
+        return;
+    }
+
+    modal.classList.remove("active");
+    modal.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("modal-open");
+}
+
 function setupTransactionModal() {
 
     const modal =
@@ -638,19 +1062,12 @@ function setupTransactionModal() {
             "cancelTransaction"
         );
 
-    const form =
-        document.getElementById(
-            "transactionForm"
-        );
-
-
     if (
         !modal ||
         !openButtons ||
         openButtons.length === 0 ||
         !closeButton ||
-        !cancelButton ||
-        !form
+        !cancelButton
     ) {
         console.warn("Transaction modal elements not found");
         return;
@@ -661,56 +1078,6 @@ function setupTransactionModal() {
        OPEN MODAL
        ----------------------------------------- */
 
-    function openModal() {
-
-        modal.classList.add("active");
-
-        modal.setAttribute(
-            "aria-hidden",
-            "false"
-        );
-
-        document.body.classList.add(
-            "modal-open"
-        );
-
-
-        setDefaultTransactionDate();
-
-
-        setTimeout(() => {
-
-            document
-                .getElementById(
-                    "transactionAmount"
-                )
-                ?.focus();
-
-        }, 200);
-
-    }
-
-
-    /* -----------------------------------------
-       CLOSE MODAL
-       ----------------------------------------- */
-
-    function closeModal() {
-
-        modal.classList.remove("active");
-
-        modal.setAttribute(
-            "aria-hidden",
-            "true"
-        );
-
-        document.body.classList.remove(
-            "modal-open"
-        );
-
-    }
-
-
     /* -----------------------------------------
        OPEN BUTTONS
        ----------------------------------------- */
@@ -719,7 +1086,18 @@ function setupTransactionModal() {
 
         button.addEventListener(
             "click",
-            openModal
+            () => {
+                AppState.editingTransactionId = null;
+                document.getElementById("transactionForm")?.reset();
+                document.getElementById("transactionType").value = "expense";
+                typeButtons.forEach(item => item.classList.toggle("active", item.dataset.type === "expense"));
+                setDefaultTransactionDate();
+                openTransactionModal();
+
+                setTimeout(() => {
+                    document.getElementById("transactionTitle")?.focus();
+                }, 200);
+            }
         );
 
     });
@@ -730,7 +1108,7 @@ function setupTransactionModal() {
 
     closeButton.addEventListener(
         "click",
-        closeModal
+        closeTransactionModal
     );
 
 
@@ -740,7 +1118,7 @@ function setupTransactionModal() {
 
     cancelButton.addEventListener(
         "click",
-        closeModal
+        closeTransactionModal
     );
 
 
@@ -756,7 +1134,7 @@ function setupTransactionModal() {
                 event.target === modal
             ) {
 
-                closeModal();
+                closeTransactionModal();
 
             }
 
@@ -777,7 +1155,7 @@ function setupTransactionModal() {
                 modal.classList.contains("active")
             ) {
 
-                closeModal();
+                closeTransactionModal();
 
             }
 
@@ -830,132 +1208,6 @@ function setupTransactionModal() {
 
     });
 
-
-    /* -----------------------------------------
-       FORM SUBMISSION
-       ----------------------------------------- */
-
-    form.addEventListener(
-        "submit",
-        event => {
-
-            event.preventDefault();
-
-
-            const formData =
-                new FormData(form);
-
-
-            const transaction = {
-
-                type:
-                    formData.get(
-                        "transactionType"
-                    ),
-
-                amount:
-                    Number(
-                        formData.get(
-                            "amount"
-                        )
-                    ),
-
-                category:
-                    formData.get(
-                        "category"
-                    ),
-
-                description:
-                    formData.get(
-                        "description"
-                    ),
-
-                date:
-                    formData.get(
-                        "date"
-                    )
-
-            };
-
-
-            console.log(
-                "New transaction:",
-                transaction
-            );
-
-
-            if (
-                !transaction.amount ||
-                transaction.amount <= 0
-            ) {
-
-                alert(
-                    "Please enter a valid amount."
-                );
-
-                return;
-
-            }
-
-
-            if (!transaction.category) {
-                alert("Please select a category.");
-                return;
-            }
-
-
-            if (!transaction.date) {
-                alert("Please select a date.");
-                return;
-            }
-
-
-            // Add the new transaction to the transactions array
-            const newTransaction = {
-                id: transactions.length + 1,
-                title: transaction.description || "Untitled transaction",
-                category: transaction.category,
-                date: transaction.date,
-                type: transaction.type,
-                amount: transaction.amount,
-                icon: getIconForCategory(transaction.category)
-            };
-            
-            transactions.push(newTransaction);
-            
-            // Re-render transactions table
-            renderTransactions();
-            
-            // Show success message
-            alert(
-                "Transaction saved successfully!"
-            );
-
-
-            form.reset();
-
-
-            typeInput.value =
-                "expense";
-
-
-            typeButtons.forEach(
-                button => {
-
-                    button.classList.toggle(
-                        "active",
-                        button.dataset.type ===
-                            "expense"
-                    );
-
-                }
-            );
-
-
-            closeModal();
-
-        }
-    );
 
 }
 
@@ -1025,94 +1277,6 @@ function setDefaultTransactionDate() {
 }
 
 /* =====================================================
-   TRANSACTION DATA
-   ===================================================== */
-
-const transactions = [
-
-    {
-        id: 1,
-        title: "Lunch with friends",
-        category: "food",
-        date: "2026-08-14",
-        type: "expense",
-        amount: 450,
-        icon: "utensils"
-    },
-
-    {
-        id: 2,
-        title: "Uber to campus",
-        category: "transport",
-        date: "2026-08-13",
-        type: "expense",
-        amount: 750,
-        icon: "car-front"
-    },
-
-    {
-        id: 3,
-        title: "New shoes",
-        category: "shopping",
-        date: "2026-08-12",
-        type: "expense",
-        amount: 3500,
-        icon: "shopping-bag"
-    },
-
-    {
-        id: 4,
-        title: "Monthly salary",
-        category: "other",
-        date: "2026-08-01",
-        type: "income",
-        amount: 85000,
-        icon: "briefcase-business"
-    },
-
-    {
-        id: 5,
-        title: "Gaming",
-        category: "entertainment",
-        date: "2026-07-30",
-        type: "expense",
-        amount: 1200,
-        icon: "gamepad-2"
-    },
-
-    {
-        id: 6,
-        title: "Electricity bill",
-        category: "bills",
-        date: "2026-07-28",
-        type: "expense",
-        amount: 3200,
-        icon: "zap"
-    },
-
-    {
-        id: 7,
-        title: "Groceries",
-        category: "food",
-        date: "2026-07-25",
-        type: "expense",
-        amount: 4250,
-        icon: "shopping-cart"
-    },
-
-    {
-        id: 8,
-        title: "Freelance project",
-        category: "other",
-        date: "2026-07-22",
-        type: "income",
-        amount: 15000,
-        icon: "laptop"
-    }
-
-];
-
-/* =====================================================
    CATEGORY LABELS
    ===================================================== */
 
@@ -1140,324 +1304,353 @@ const categoryLabels = {
    RENDER TRANSACTIONS
    ===================================================== */
 
-function renderTransactions(data = transactions) {
+function renderTransactionCards(
+    transactionList = AppState.transactions
+) {
 
-    const tableBody =
+    const container =
         document.getElementById(
-            "transactionsTableBody"
-        );
-
-    const emptyState =
-        document.getElementById(
-            "transactionsEmpty"
-        );
-
-    const resultCount =
-        document.getElementById(
-            "transactionResultCount"
+            "transactionsList"
         );
 
 
-    if (
-        !tableBody ||
-        !emptyState ||
-        !resultCount
-    ) {
+    if (!container) {
         return;
     }
 
 
-    tableBody.innerHTML = "";
+    if (!transactionList.length) {
 
+        container.innerHTML = `
+            <div class="empty-state">
 
-    if (data.length === 0) {
+                <i data-lucide="receipt"></i>
 
-        emptyState.classList.add(
-            "visible"
-        );
+                <h3>
+                    No transactions yet
+                </h3>
 
-        resultCount.textContent =
-            "Showing 0 transactions";
+                <p>
+                    Add your first transaction
+                    to start tracking your finances.
+                </p>
 
-        return;
-
-    }
-
-
-    emptyState.classList.remove(
-        "visible"
-    );
-
-
-    data.forEach(transaction => {
-
-        const row =
-            document.createElement("tr");
-
-
-        const formattedAmount =
-            new Intl.NumberFormat(
-                "en-KE",
-                {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                }
-            ).format(
-                transaction.amount
-            );
-
-
-        const formattedDate =
-            new Intl.DateTimeFormat(
-                "en-GB",
-                {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric"
-                }
-            ).format(
-                new Date(
-                    transaction.date +
-                    "T00:00:00"
-                )
-            );
-
-
-        const amountPrefix =
-            transaction.type === "income"
-                ? "+"
-                : "-";
-
-
-        const typeLabel =
-            transaction.type === "income"
-                ? "Income"
-                : "Expense";
-
-
-        row.innerHTML = `
-
-            <td>
-
-                <div class="table-transaction">
-
-                    <div
-                        class="table-transaction-icon
-                        ${getTransactionIconClass(
-                            transaction.category
-                        )}"
-                    >
-
-                        <i
-                            data-lucide="${transaction.icon}"
-                        ></i>
-
-                    </div>
-
-
-                    <div
-                        class="table-transaction-information"
-                    >
-
-                        <strong>
-                            ${escapeHTML(
-                                transaction.title
-                            )}
-                        </strong>
-
-                        <span>
-                            Transaction #${transaction.id}
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </td>
-
-
-            <td>
-
-                <span class="category-badge">
-
-                    ${
-                        categoryLabels[
-                            transaction.category
-                        ] ||
-                        transaction.category
-                    }
-
-                </span>
-
-            </td>
-
-
-            <td>
-                ${formattedDate}
-            </td>
-
-
-            <td>
-
-                <span
-                    class="type-badge
-                    ${
-                        transaction.type ===
-                        "income"
-                            ? "type-income"
-                            : "type-expense"
-                    }"
-                >
-
-                    <i
-                        data-lucide="${
-                            transaction.type ===
-                            "income"
-                                ? "arrow-down-left"
-                                : "arrow-up-right"
-                        }"
-                    ></i>
-
-                    ${typeLabel}
-
-                </span>
-
-            </td>
-
-
-            <td
-                class="amount-value
-                ${
-                    transaction.type === "income"
-                        ? "amount-income"
-                        : "amount-expense"
-                }"
-            >
-
-                ${amountPrefix}
-                KES ${formattedAmount}
-
-            </td>
-
-
-            <td>
-
-                <div class="table-actions">
-
-                    <button
-                        class="table-action-button"
-                        title="Edit transaction"
-                        data-edit-id="${transaction.id}"
-                    >
-
-                        <i data-lucide="pencil"></i>
-
-                    </button>
-
-
-                    <button
-                        class="table-action-button delete"
-                        title="Delete transaction"
-                        data-delete-id="${transaction.id}"
-                    >
-
-                        <i data-lucide="trash-2"></i>
-
-                    </button>
-
-                </div>
-
-            </td>
-
+            </div>
         `;
 
+        initializeIcons();
 
-        tableBody.appendChild(row);
+        return;
 
-    });
-
-
-    resultCount.textContent =
-        `Showing ${data.length} transaction${
-            data.length === 1 ? "" : "s"
-        }`;
+    }
 
 
-    // Add event listeners for edit and delete buttons
-    const editButtons = tableBody.querySelectorAll('[data-edit-id]');
-    const deleteButtons = tableBody.querySelectorAll('[data-delete-id]');
-    
-    editButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const id = Number(button.dataset.editId);
-            editTransaction(id);
-        });
-    });
-    
-    deleteButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const id = Number(button.dataset.deleteId);
-            deleteTransaction(id);
-        });
-    });
+    container.innerHTML =
+        transactionList.map(
+            transaction => {
+
+                const isIncome =
+                    transaction.type ===
+                    "income";
+
+
+                return `
+                    <div
+                        class="transaction-item"
+                        data-id="${transaction.id}"
+                    >
+
+                        <div class="transaction-icon">
+
+                            <i data-lucide="${
+                                isIncome
+                                    ? "arrow-down-left"
+                                    : "arrow-up-right"
+                            }"></i>
+
+                        </div>
+
+
+                        <div class="transaction-details">
+
+                            <strong>
+                                ${escapeHTML(
+                                    transaction.title
+                                )}
+                            </strong>
+
+                            <span>
+                                ${escapeHTML(
+                                    transaction.category
+                                )}
+                                ·
+                                ${transaction.date}
+                            </span>
+
+                        </div>
+
+
+                        <div
+                            class="transaction-amount ${
+                                isIncome
+                                    ? "income"
+                                    : "expense"
+                            }"
+                        >
+
+                            ${
+                                isIncome
+                                    ? "+"
+                                    : "-"
+                            }
+
+                            ${CurrencyManager.format(
+                                transaction.amount
+                            )}
+
+                        </div>
+
+
+                        <div class="transaction-actions">
+
+                            <button
+                                class="icon-button edit-transaction"
+                                data-id="${transaction.id}"
+                                title="Edit transaction"
+                            >
+
+                                <i data-lucide="pencil"></i>
+
+                            </button>
+
+
+                            <button
+                                class="icon-button delete-transaction"
+                                data-id="${transaction.id}"
+                                title="Delete transaction"
+                            >
+
+                                <i data-lucide="trash-2"></i>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+                `;
+
+            }
+        ).join("");
 
 
     initializeIcons();
 
+    setupTransactionRowActions();
+
 }
 
-/* =====================================================
-   EDIT TRANSACTION
-   ===================================================== */
+function renderTransactions(transactionList = AppState.transactions) {
 
-function editTransaction(id) {
-    const transaction = transactions.find(t => t.id === id);
-    
-    if (!transaction) return;
-    
-    console.log("Edit transaction:", transaction);
-    
-    // Open modal with transaction data
-    const modal = document.getElementById("transactionModal");
-    const form = document.getElementById("transactionForm");
-    
-    if (!modal || !form) return;
-    
-    // Populate form with transaction data
-    document.getElementById("transactionType").value = transaction.type;
-    document.getElementById("transactionAmount").value = transaction.amount;
-    document.getElementById("transactionCategory").value = transaction.category;
-    document.getElementById("transactionDescription").value = transaction.title;
-    document.getElementById("transactionDate").value = transaction.date;
-    
-    // Update type selector buttons
-    document.querySelectorAll(".transaction-type").forEach(button => {
-        button.classList.toggle("active", button.dataset.type === transaction.type);
-    });
-    
-    // Open modal
-    modal.classList.add("active");
-    modal.setAttribute("aria-hidden", "false");
-    document.body.classList.add("modal-open");
-    
-    // Store transaction ID for updating
-    form.dataset.editId = id;
-}
+    const tableBody = document.getElementById("transactionsTableBody");
+    const emptyState = document.getElementById("transactionsEmpty");
+    const resultCount = document.getElementById("transactionResultCount");
 
-/* =====================================================
-   DELETE TRANSACTION
-   ===================================================== */
-
-function deleteTransaction(id) {
-    const index = transactions.findIndex(t => t.id === id);
-    
-    if (index === -1) return;
-    
-    if (confirm("Are you sure you want to delete this transaction?")) {
-        transactions.splice(index, 1);
-        renderTransactions();
-        console.log("Transaction deleted:", id);
+    if (!tableBody || !emptyState || !resultCount) {
+        return;
     }
+
+    tableBody.innerHTML = "";
+
+    if (!transactionList.length) {
+        emptyState.classList.add("visible");
+        resultCount.textContent = "Showing 0 transactions";
+        return;
+    }
+
+    emptyState.classList.remove("visible");
+
+    transactionList.forEach(transaction => {
+        const row = document.createElement("tr");
+        const isIncome = transaction.type === "income";
+        const categoryLabel = categoryLabels[transaction.category] || transaction.category;
+        const formattedDate = new Intl.DateTimeFormat("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        }).format(new Date(`${transaction.date}T00:00:00`));
+
+        row.innerHTML = `
+            <td><div class="table-transaction"><div class="table-transaction-icon ${getTransactionIconClass(transaction.category)}"><i data-lucide="${getIconForCategory(transaction.category)}"></i></div><div class="table-transaction-information"><strong>${escapeHTML(transaction.title)}</strong><span>Transaction #${transaction.id}</span></div></div></td>
+            <td><span class="category-badge">${escapeHTML(categoryLabel)}</span></td>
+            <td>${formattedDate}</td>
+            <td><span class="type-badge ${isIncome ? "type-income" : "type-expense"}"><i data-lucide="${isIncome ? "arrow-down-left" : "arrow-up-right"}"></i>${isIncome ? "Income" : "Expense"}</span></td>
+            <td class="amount-value ${isIncome ? "amount-income" : "amount-expense"}">${isIncome ? "+" : "-"} ${CurrencyManager.format(transaction.amount)}</td>
+            <td><div class="table-actions"><button class="table-action-button" title="Edit transaction" data-edit-id="${transaction.id}"><i data-lucide="pencil"></i></button><button class="table-action-button delete" title="Delete transaction" data-delete-id="${transaction.id}"><i data-lucide="trash-2"></i></button></div></td>`;
+
+        tableBody.appendChild(row);
+    });
+
+    resultCount.textContent = `Showing ${transactionList.length} transaction${transactionList.length === 1 ? "" : "s"}`;
+
+    tableBody.querySelectorAll("[data-edit-id]").forEach(button => {
+        button.addEventListener("click", () => {
+            openEditTransaction(Number(button.dataset.editId));
+        });
+    });
+
+    tableBody.querySelectorAll("[data-delete-id]").forEach(button => {
+        button.addEventListener("click", () => {
+            deleteTransaction(Number(button.dataset.deleteId));
+        });
+    });
+
+    initializeIcons();
+}
+
+function escapeHTML(value) {
+
+    const div =
+        document.createElement("div");
+
+
+    div.textContent =
+        String(value ?? "");
+
+
+    return div.innerHTML;
+
+}
+
+function setupTransactionRowActions() {
+
+    const editButtons =
+        document.querySelectorAll(
+            ".edit-transaction"
+        );
+
+
+    const deleteButtons =
+        document.querySelectorAll(
+            ".delete-transaction"
+        );
+
+
+    editButtons.forEach(
+        button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const id =
+                        Number(
+                            button.dataset.id
+                        );
+
+
+                    openEditTransaction(
+                        id
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+    deleteButtons.forEach(
+        button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const id =
+                        Number(
+                            button.dataset.id
+                        );
+
+
+                    deleteTransaction(id);
+
+                }
+            );
+
+        }
+    );
+
+}
+
+function openEditTransaction(
+    transactionId
+) {
+
+    const transaction =
+        AppState.transactions.find(
+            item =>
+                item.id === transactionId
+        );
+
+
+    if (!transaction) {
+
+        console.error(
+            "Transaction not found."
+        );
+
+        return;
+
+    }
+
+    AppState.editingTransactionId =
+        transactionId;
+
+    document.getElementById(
+        "transactionTitle"
+    ).value =
+        transaction.title;
+
+
+    document.getElementById(
+        "transactionAmount"
+    ).value =
+        transaction.amount;
+
+
+    document.getElementById(
+        "transactionCategory"
+    ).value =
+        transaction.category;
+
+
+    document.getElementById(
+        "transactionDate"
+    ).value =
+        transaction.date;
+
+
+    document.getElementById(
+        "transactionDescription"
+    ).value =
+        transaction.description || "";
+
+
+    document.getElementById(
+        "transactionType"
+    ).value =
+        transaction.type;
+
+    document.querySelectorAll(".transaction-type").forEach(button => {
+        button.classList.toggle(
+            "active",
+            button.dataset.type === transaction.type
+        );
+    });
+
+
+    openTransactionModal();
+
 }
 
 function getTransactionIconClass(category) {
@@ -1484,18 +1677,6 @@ function getTransactionIconClass(category) {
 
 
     return classes[category] || "income-icon";
-
-}
-
-function escapeHTML(value) {
-
-    const div =
-        document.createElement("div");
-
-    div.textContent =
-        value ?? "";
-
-    return div.innerHTML;
 
 }
 
@@ -1553,7 +1734,7 @@ function setupTransactionFilters() {
 
 
         const filtered =
-            transactions.filter(
+            AppState.transactions.filter(
                 transaction => {
 
                     const matchesSearch =
@@ -2749,6 +2930,8 @@ document.addEventListener(
         setupThemeToggle();
 
         setupTransactionModal();
+
+        setupTransactionForm();
 
         setupTransactionFilters();
 
