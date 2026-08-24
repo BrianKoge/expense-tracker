@@ -3,6 +3,25 @@
    APPLICATION SHELL
    ===================================================== */
 
+/* =====================================================
+   APPLICATION STATE
+   ===================================================== */
+
+const AppState = {
+
+    transactions: [],
+
+    categories: [],
+
+    budgets: [],
+
+    settings: {},
+
+    initialized: false
+
+};
+
+
 
 /* =====================================================
    ICON INITIALIZATION
@@ -106,6 +125,76 @@ function updateThemeIcon() {
     initializeIcons();
 
 }
+
+/* =====================================================
+   INITIALIZE APPLICATION STATE
+   ===================================================== */
+
+function initializeAppState() {
+
+    AppState.transactions =
+        StorageManager.get(
+            "expenseTrackerTransactions",
+            defaultTransactions
+        );
+
+
+    AppState.categories =
+        StorageManager.get(
+            "expenseTrackerCategories",
+            defaultCategories
+        );
+
+
+    AppState.budgets =
+        StorageManager.get(
+            "expenseTrackerBudgets",
+            defaultBudgets
+        );
+
+
+    AppState.settings =
+        StorageManager.get(
+            "expenseTrackerSettings",
+            defaultSettings
+        );
+
+
+    AppState.initialized = true;
+
+}
+
+/* =====================================================
+   SAVE APPLICATION STATE
+   ===================================================== */
+
+function saveAppState() {
+
+    StorageManager.set(
+        "expenseTrackerTransactions",
+        AppState.transactions
+    );
+
+
+    StorageManager.set(
+        "expenseTrackerCategories",
+        AppState.categories
+    );
+
+
+    StorageManager.set(
+        "expenseTrackerBudgets",
+        AppState.budgets
+    );
+
+
+    StorageManager.set(
+        "expenseTrackerSettings",
+        AppState.settings
+    );
+
+}
+
 
 
 /* =====================================================
@@ -2649,6 +2738,8 @@ document.addEventListener(
     "DOMContentLoaded",
     () => {
 
+        initializeAppState();
+
         ThemeManager.initialize();
 
         setupNavigation();
@@ -2674,8 +2765,6 @@ document.addEventListener(
         setupSettingsSaving();
 
         setupSecurityActions();
-
-        setupChangePassword();
 
         loadSettings();
 
