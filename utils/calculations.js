@@ -71,21 +71,21 @@ const FinanceCalculator = {
     },
 
 
-    getBudgetPercentage(
-        spent,
-        limit
-    ) {
+    getBudgetUsagePercentage(budget) {
 
-        if (!limit || limit <= 0) {
+        const spent =
+            getBudgetSpent(
+                budget.category
+            );
+
+        if (!budget.limit || budget.limit <= 0) {
             return 0;
         }
 
-
         return Math.min(
-            (spent / limit) * 100,
+            (spent / budget.limit) * 100,
             100
         );
 
     }
-
 };

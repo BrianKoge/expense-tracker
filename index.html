@@ -29,7 +29,7 @@
       <!-- ==========================================
              SIDEBAR
              ========================================== -->
-      <aside class="sidebar">
+      <aside class="sidebar" id="appSidebar">
         <!-- Logo -->
         <div class="sidebar-logo">
           <div class="logo-mark">
@@ -91,12 +91,14 @@
               <strong> Brian </strong>
               <span> Personal account </span>
             </div>
-            <button class="icon-button" aria-label="User menu">
+            <button class="icon-button" id="sidebarUserMenuButton" aria-label="User menu" aria-expanded="false">
               <i data-lucide="more-horizontal"></i>
             </button>
           </div>
         </div>
       </aside>
+
+      <div id="sidebarOverlay" class="sidebar-overlay" aria-hidden="true"></div>
 
       <!-- ==========================================
              MAIN APPLICATION
@@ -111,6 +113,8 @@
               class="mobile-menu-button icon-button"
               id="mobileMenuButton"
               aria-label="Open navigation"
+              aria-expanded="false"
+              aria-controls="appSidebar"
             >
               <i data-lucide="menu"></i>
             </button>
@@ -123,7 +127,7 @@
           </div>
 
           <div class="topbar-actions">
-            <button class="icon-button" aria-label="Search">
+            <button class="icon-button" id="globalSearchButton" aria-label="Search transactions" aria-expanded="false" aria-controls="globalSearchPanel">
               <i data-lucide="search"></i>
             </button>
             <button
@@ -133,20 +137,37 @@
             >
               <i data-lucide="moon"></i>
             </button>
-            <button class="notification-button" aria-label="Notifications">
+            <button class="notification-button" id="notificationsButton" aria-label="Notifications" aria-expanded="false" aria-controls="notificationsPanel">
               <i data-lucide="bell"></i>
               <span class="notification-dot"></span>
             </button>
-            <div class="topbar-profile">
+            <button class="topbar-profile" id="profileMenuButton" type="button" aria-label="Open profile menu" aria-expanded="false" aria-controls="profileMenu">
               <div class="user-avatar">B</div>
               <div>
                 <strong> Brian </strong>
                 <span> Personal </span>
               </div>
               <i data-lucide="chevron-down"></i>
-            </div>
+            </button>
           </div>
         </header>
+
+        <section class="topbar-panel search-panel" id="globalSearchPanel" aria-label="Search transactions" hidden>
+          <label for="globalSearchInput">Search transactions</label>
+          <div class="global-search-input"><i data-lucide="search"></i><input id="globalSearchInput" type="search" placeholder="Search by title or category..." autocomplete="off"></div>
+          <div id="globalSearchResults" class="panel-results"></div>
+        </section>
+
+        <section class="topbar-panel notifications-panel" id="notificationsPanel" aria-label="Notifications" hidden>
+          <div class="panel-heading"><strong>Notifications</strong><button type="button" id="markNotificationsRead">Mark all read</button></div>
+          <div id="notificationsList" class="panel-results"></div>
+        </section>
+
+        <section class="topbar-panel profile-panel" id="profileMenu" aria-label="Profile menu" hidden>
+          <button type="button" data-profile-action="settings"><i data-lucide="settings-2"></i>Account settings</button>
+          <button type="button" data-profile-action="theme"><i data-lucide="sun-moon"></i>Toggle theme</button>
+          <button type="button" data-profile-action="help"><i data-lucide="circle-help"></i>Help and shortcuts</button>
+        </section>
 
         <!-- ======================================
              PAGE CONTENT (MULTIPLE PAGES)
@@ -181,7 +202,7 @@
                   <div class="summary-card-top">
                     <div>
                       <p class="summary-label">Total Balance</p>
-                      <h2 class="summary-value">KES 59,765.00</h2>
+                      <h2 class="summary-value" id="dashboardBalance">KES 0</h2>
                     </div>
                     <div class="icon-box icon-box-primary">
                       <i data-lucide="wallet"></i>
@@ -190,7 +211,7 @@
                   <div class="summary-footer">
                     <span class="trend trend-positive">
                       <i data-lucide="trending-up"></i>
-                      8.4%
+                      Current month
                     </span>
                     <span> vs. last month </span>
                   </div>
@@ -200,7 +221,7 @@
                   <div class="summary-card-top">
                     <div>
                       <p class="summary-label">Total Income</p>
-                      <h2 class="summary-value">KES 85,000.00</h2>
+                      <h2 class="summary-value" id="dashboardIncome">KES 0</h2>
                     </div>
                     <div class="icon-box icon-box-income">
                       <i data-lucide="arrow-down-left"></i>
@@ -209,7 +230,7 @@
                   <div class="summary-footer">
                     <span class="trend trend-positive">
                       <i data-lucide="trending-up"></i>
-                      12.5%
+                      Current month
                     </span>
                     <span> vs. last month </span>
                   </div>
@@ -219,7 +240,7 @@
                   <div class="summary-card-top">
                     <div>
                       <p class="summary-label">Total Expenses</p>
-                      <h2 class="summary-value">KES 25,235.00</h2>
+                      <h2 class="summary-value" id="dashboardExpenses">KES 0</h2>
                     </div>
                     <div class="icon-box icon-box-expense">
                       <i data-lucide="arrow-up-right"></i>
@@ -228,7 +249,7 @@
                   <div class="summary-footer">
                     <span class="trend trend-positive">
                       <i data-lucide="trending-down"></i>
-                      4.2%
+                      Current month
                     </span>
                     <span> vs. last month </span>
                   </div>
@@ -238,7 +259,7 @@
                   <div class="summary-card-top">
                     <div>
                       <p class="summary-label">Savings</p>
-                      <h2 class="summary-value">KES 59,765.00</h2>
+                      <h2 class="summary-value" id="dashboardSavings">KES 0</h2>
                     </div>
                     <div class="icon-box icon-box-warning">
                       <i data-lucide="piggy-bank"></i>
@@ -247,7 +268,7 @@
                   <div class="summary-footer">
                     <span class="trend trend-positive">
                       <i data-lucide="trending-up"></i>
-                      6.8%
+                      <span id="dashboardSavingsRate">0% savings rate</span>
                     </span>
                     <span> savings rate </span>
                   </div>
@@ -279,19 +300,23 @@
                       <h3>Spending by Category</h3>
                       <p>This month's expenses</p>
                     </div>
-                    <button class="icon-button" aria-label="Category options">
+                    <button class="icon-button" id="categoryOptionsButton" type="button" aria-label="Category options" aria-expanded="false" aria-controls="categoryOptionsMenu">
                       <i data-lucide="more-horizontal"></i>
                     </button>
+                    <div class="context-menu" id="categoryOptionsMenu" hidden>
+                      <button type="button" data-category-action="manage">Manage categories</button>
+                      <button type="button" data-category-action="refresh">Refresh breakdown</button>
+                    </div>
                   </div>
                   <div class="category-content">
                     <div class="donut-container">
                       <canvas id="categoryChart"></canvas>
                       <div class="donut-center">
-                        <strong> KES 25.2K </strong>
+                        <strong id="dashboardCategoryTotal">KES 0</strong>
                         <span> Total spent </span>
                       </div>
                     </div>
-                    <div class="category-list">
+                    <div class="category-list" id="dashboardCategoryList">
                       <div class="category-item">
                         <div class="category-name">
                           <span class="category-dot category-food"></span>
@@ -346,7 +371,7 @@
                     <i data-lucide="arrow-right"></i>
                   </button>
                 </div>
-                <div class="transaction-list">
+                <div class="transaction-list" id="dashboardRecentTransactions">
                   <div class="transaction-item">
                     <div class="transaction-main">
                       <div class="transaction-icon food-icon">
@@ -415,6 +440,24 @@
                   </div>
                 </div>
               </section>
+              <section class="dashboard-card">
+                <div class="dashboard-card-header">
+                  <div>
+                    <h3>Top Spending Category</h3>
+                    <p id="topSpendingCategory">No data</p>
+                  </div>
+                  <strong id="topSpendingAmount">KES 0</strong>
+                </div>
+              </section>
+              <section class="dashboard-card insights-card">
+                <div class="dashboard-card-header">
+                  <div>
+                    <h3>Financial Insights</h3>
+                    <p>Personalized from your transactions and budgets</p>
+                  </div>
+                </div>
+                <div id="financialInsights" class="financial-insights"></div>
+              </section>
             </div>
             <!-- END dashboard content -->
           </div>
@@ -447,7 +490,7 @@
                 </div>
                 <div>
                   <span> Total Income </span>
-                  <strong> KES 85,000 </strong>
+                  <strong id="transactionsTotalIncome">KES 0</strong>
                 </div>
               </div>
               <div class="transaction-stat-card">
@@ -456,7 +499,7 @@
                 </div>
                 <div>
                   <span> Total Expenses </span>
-                  <strong> KES 25,235 </strong>
+                  <strong id="transactionsTotalExpenses">KES 0</strong>
                 </div>
               </div>
               <div class="transaction-stat-card">
@@ -465,7 +508,7 @@
                 </div>
                 <div>
                   <span> Net Balance </span>
-                  <strong> KES 59,765 </strong>
+                  <strong id="transactionsNetBalance">KES 0</strong>
                 </div>
               </div>
             </div>
@@ -474,7 +517,7 @@
             <section class="dashboard-card transactions-management-card">
               <!-- Filters -->
               <div class="transaction-toolbar">
-                <div class="transaction-search">
+                <div class="transaction-search search-box">
                   <i data-lucide="search"></i>
                   <input
                     type="search"
@@ -485,24 +528,28 @@
                 </div>
                 <div class="transaction-filters">
                   <select id="transactionTypeFilter" class="filter-select">
-                    <option value="all">All types</option>
+                    <option value="all">All</option>
                     <option value="income">Income</option>
-                    <option value="expense">Expenses</option>
+                    <option value="expense">Expense</option>
                   </select>
                   <select id="transactionCategoryFilter" class="filter-select">
-                    <option value="all">All categories</option>
-                    <option value="food">Food</option>
-                    <option value="transport">Transport</option>
-                    <option value="shopping">Shopping</option>
-                    <option value="entertainment">Entertainment</option>
-                    <option value="bills">Bills & Utilities</option>
-                    <option value="health">Health</option>
-                    <option value="education">Education</option>
-                    <option value="other">Other</option>
+                    <option value="all">All Categories</option>
+                  </select>
+                  <select id="transactionDateFilter" class="filter-select">
+                    <option value="all">All Time</option>
+                    <option value="today">Today</option>
+                    <option value="week">This Week</option>
+                    <option value="month">This Month</option>
+                  </select>
+                  <select id="transactionSortFilter" class="filter-select">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="highest">Highest Amount</option>
+                    <option value="lowest">Lowest Amount</option>
                   </select>
                   <button class="filter-button" id="clearTransactionFilters">
                     <i data-lucide="rotate-ccw"></i>
-                    Reset
+                    Clear Filters
                   </button>
                 </div>
               </div>
@@ -530,6 +577,10 @@
                   </div>
                   <h3>No transactions found</h3>
                   <p>Try changing your search or filters.</p>
+                  <button type="button" class="btn btn-primary" id="emptyAddTransactionButton">
+                    <i data-lucide="plus"></i>
+                    Add Transaction
+                  </button>
                 </div>
               </div>
 
@@ -588,10 +639,10 @@
                   <div class="analytics-summary-icon income-icon">
                     <i data-lucide="trending-up"></i>
                   </div>
-                  <span class="analytics-change positive">+12.5%</span>
+                  <span class="analytics-change positive">Current period</span>
                 </div>
                 <span class="analytics-label">Total Income</span>
-                <strong class="analytics-value">KES 100,000</strong>
+                <strong class="analytics-value" id="analyticsIncome">KES 0</strong>
                 <span class="analytics-description">Compared with last month</span>
               </div>
 
@@ -601,10 +652,10 @@
                   <div class="analytics-summary-icon expense-icon">
                     <i data-lucide="trending-down"></i>
                   </div>
-                  <span class="analytics-change negative">+8.2%</span>
+                  <span class="analytics-change negative">Current period</span>
                 </div>
                 <span class="analytics-label">Total Expenses</span>
-                <strong class="analytics-value">KES 25,235</strong>
+                <strong class="analytics-value" id="analyticsExpenses">KES 0</strong>
                 <span class="analytics-description">Compared with last month</span>
               </div>
 
@@ -614,11 +665,11 @@
                   <div class="analytics-summary-icon savings-icon">
                     <i data-lucide="piggy-bank"></i>
                   </div>
-                  <span class="analytics-change positive">+4.8%</span>
+                  <span class="analytics-change positive">Current period</span>
                 </div>
                 <span class="analytics-label">Savings</span>
-                <strong class="analytics-value">KES 74,765</strong>
-                <span class="analytics-description">74.8% of your income</span>
+                <strong class="analytics-value" id="analyticsSavings">KES 0</strong>
+                <span class="analytics-description" id="analyticsSavingsDescription">0% of your income</span>
               </div>
 
               <!-- Daily Average -->
@@ -629,7 +680,7 @@
                   </div>
                 </div>
                 <span class="analytics-label">Daily Average</span>
-                <strong class="analytics-value">KES 814</strong>
+                <strong class="analytics-value" id="analyticsDailyAverage">KES 0</strong>
                 <span class="analytics-description">Average daily spending</span>
               </div>
             </div>
@@ -688,7 +739,7 @@
                 </div>
               </div>
 
-              <div class="insights-grid">
+              <div class="insights-grid" id="analyticsInsights">
                 <!-- Insight 1 -->
                 <div class="insight-item">
                   <div class="insight-icon">
@@ -827,9 +878,53 @@
 
     <div
         class="categories-grid"
-        id="categoriesGrid"
+        id="categoriesList"
     >
     </div>
+
+    <section class="categories-section" aria-labelledby="budgetsTitle">
+
+        <div class="page-header">
+
+            <div>
+
+                <p class="page-eyebrow">SPENDING LIMITS</p>
+
+                <h2 id="budgetsTitle">Budgets</h2>
+
+            </div>
+
+        </div>
+
+        <form id="budgetForm" class="form-actions">
+
+            <div class="form-group">
+
+                <label for="budgetCategory">Expense Category</label>
+
+                <select id="budgetCategory" required>
+
+                    <option value="">Select a category</option>
+
+                </select>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="budgetLimit">Budget Limit (KES)</label>
+
+                <input id="budgetLimit" type="number" min="1" step="1" required>
+
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Budget</button>
+
+        </form>
+
+        <div class="categories-grid" id="budgetsList"></div>
+
+    </section>
 
 
     <!-- ==========================================
@@ -2097,7 +2192,7 @@
                 id="transactionAmount"
                 name="amount"
                 placeholder="0.00"
-                min="0"
+                min="0.01"
                 step="0.01"
                 required
               />
@@ -2141,7 +2236,7 @@
               id="transactionDescription"
               name="description"
               placeholder="e.g. Lunch with friends"
-              maxlength="100"
+              maxlength="500"
             />
           </div>
 
@@ -2181,6 +2276,8 @@
         </form>
       </div>
     </div>
+
+    <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

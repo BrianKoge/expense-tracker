@@ -2,28 +2,24 @@ const defaultBudgets = [
     {
         id: 1,
         category: "Food",
-        limit: 15000,
-        spent: 4500
+        limit: 15000
     },
 
     {
         id: 2,
         category: "Transport",
-        limit: 10000,
-        spent: 1200
+        limit: 10000
     },
 
     {
         id: 3,
         category: "Bills",
-        limit: 12000,
-        spent: 3000
+        limit: 12000
     },
 
     {
         id: 4,
         category: "Entertainment",
-        limit: 8000,
-        spent: 0
+        limit: 8000
     }
 ];
