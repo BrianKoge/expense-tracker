@@ -11,6 +11,10 @@ const transactionRoutes = require(
     "./routes/transactionRoutes"
 );
 
+const db = require(
+    "./config/database"
+);
+
 
 /* =====================================================
    APPLICATION
@@ -50,19 +54,50 @@ app.use(
 
 app.get(
     "/api/health",
-    (req, res) => {
+    async (req, res) => {
 
-        res.status(200).json({
+        try {
 
-            success: true,
+            await db.query(
+                "SELECT 1"
+            );
 
-            message:
-                "Expense Tracker API is running.",
 
-            timestamp:
-                new Date().toISOString()
+            res.status(200).json({
 
-        });
+                success: true,
+
+                api: "online",
+
+                database: "connected",
+
+                message:
+                    "Expense Tracker API is healthy."
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Health check failed:",
+                error.message
+            );
+
+
+            res.status(503).json({
+
+                success: false,
+
+                api: "online",
+
+                database: "disconnected",
+
+                message:
+                    "Database connection unavailable."
+
+            });
+
+        }
 
     }
 );
@@ -135,8 +170,41 @@ app.use(
 
 
 /* =====================================================
+   DATABASE CONNECTION TEST
+   ===================================================== */
+
+async function testDatabaseConnection() {
+
+    try {
+
+        const connection =
+            await db.getConnection();
+
+        console.log(
+            "MySQL database connected successfully."
+        );
+
+        connection.release();
+
+    } catch (error) {
+
+        console.error(
+            "MySQL database connection failed:",
+            error.message
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
    START SERVER
    ===================================================== */
+
+testDatabaseConnection();
+
 
 app.listen(
     PORT,

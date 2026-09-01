@@ -1,101 +1,233 @@
+const transactionService =
+    require(
+        "../services/transactionService"
+    );
+
+
 /* =====================================================
-   TRANSACTION CONTROLLER
+   GET ALL TRANSACTIONS
    ===================================================== */
 
-
-const getTransactions = (
+const getTransactions = async (
     req,
-    res
+    res,
+    next
 ) => {
 
-    res.status(200).json({
+    try {
 
-        success: true,
+        const transactions =
+            await transactionService
+                .getAllTransactions();
 
-        message:
-            "Transaction endpoint is working.",
 
-        data: []
+        res.status(200).json({
 
-    });
+            success: true,
+
+            data: transactions
+
+        });
+
+    } catch (error) {
+
+        next(error);
+
+    }
 
 };
 
 
-const createTransaction = (
+/* =====================================================
+   CREATE TRANSACTION
+   ===================================================== */
+
+const createTransaction = async (
     req,
-    res
+    res,
+    next
 ) => {
 
-    res.status(201).json({
+    try {
 
-        success: true,
+        const transaction =
+            await transactionService
+                .createTransaction(
+                    req.body
+                );
 
-        message:
-            "Create transaction endpoint is working.",
 
-        data: req.body
+        res.status(201).json({
 
-    });
+            success: true,
+
+            message:
+                "Transaction created successfully.",
+
+            data: transaction
+
+        });
+
+    } catch (error) {
+
+        next(error);
+
+    }
 
 };
 
 
-const getTransactionById = (
+/* =====================================================
+   GET TRANSACTION
+   ===================================================== */
+
+const getTransactionById = async (
     req,
-    res
+    res,
+    next
 ) => {
 
-    res.status(200).json({
+    try {
 
-        success: true,
+        const transaction =
+            await transactionService
+                .getTransactionById(
+                    req.params.id
+                );
 
-        message:
-            "Get transaction endpoint is working.",
 
-        id: req.params.id
+        if (!transaction) {
 
-    });
+            return res.status(404).json({
+
+                success: false,
+
+                message:
+                    "Transaction not found."
+
+            });
+
+        }
+
+
+        res.status(200).json({
+
+            success: true,
+
+            data: transaction
+
+        });
+
+    } catch (error) {
+
+        next(error);
+
+    }
 
 };
 
 
-const updateTransaction = (
+/* =====================================================
+   UPDATE TRANSACTION
+   ===================================================== */
+
+const updateTransaction = async (
     req,
-    res
+    res,
+    next
 ) => {
 
-    res.status(200).json({
+    try {
 
-        success: true,
+        const transaction =
+            await transactionService
+                .updateTransaction(
+                    req.params.id,
+                    req.body
+                );
 
-        message:
-            "Update transaction endpoint is working.",
 
-        id: req.params.id,
+        if (!transaction) {
 
-        data: req.body
+            return res.status(404).json({
 
-    });
+                success: false,
+
+                message:
+                    "Transaction not found."
+
+            });
+
+        }
+
+
+        res.status(200).json({
+
+            success: true,
+
+            message:
+                "Transaction updated successfully.",
+
+            data: transaction
+
+        });
+
+    } catch (error) {
+
+        next(error);
+
+    }
 
 };
 
 
-const deleteTransaction = (
+/* =====================================================
+   DELETE TRANSACTION
+   ===================================================== */
+
+const deleteTransaction = async (
     req,
-    res
+    res,
+    next
 ) => {
 
-    res.status(200).json({
+    try {
 
-        success: true,
+        const deleted =
+            await transactionService
+                .deleteTransaction(
+                    req.params.id
+                );
 
-        message:
-            "Delete transaction endpoint is working.",
 
-        id: req.params.id
+        if (!deleted) {
 
-    });
+            return res.status(404).json({
+
+                success: false,
+
+                message:
+                    "Transaction not found."
+
+            });
+
+        }
+
+
+        res.status(200).json({
+
+            success: true,
+
+            message:
+                "Transaction deleted successfully."
+
+        });
+
+    } catch (error) {
+
+        next(error);
+
+    }
 
 };
 
