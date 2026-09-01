@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Create Account | Expense Tracker
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="assets/css/style.css"
+    >
+
+</head>
+
+
+<body>
+
+    <main class="auth-page">
+
+        <section class="auth-card">
+
+            <div class="auth-header">
+
+                <div class="auth-logo">
+                    $
+                </div>
+
+                <h1>
+                    Create your account
+                </h1>
+
+                <p>
+                    Start taking control of your finances.
+                </p>
+
+            </div>
+
+
+            <form
+                id="registerForm"
+                class="auth-form"
+            >
+
+                <div class="form-group">
+
+                    <label for="registerName">
+                        Full name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="registerName"
+                        name="name"
+                        placeholder="Your name"
+                        autocomplete="name"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="registerEmail">
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="registerEmail"
+                        name="email"
+                        placeholder="you@example.com"
+                        autocomplete="email"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="registerPassword">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="registerPassword"
+                        name="password"
+                        placeholder="At least 8 characters"
+                        autocomplete="new-password"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="confirmPassword">
+                        Confirm password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        placeholder="Repeat your password"
+                        autocomplete="new-password"
+                        required
+                    >
+
+                </div>
+
+
+                <div
+                    id="registerError"
+                    class="auth-error"
+                    hidden
+                ></div>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-primary auth-submit"
+                    id="registerButton"
+                >
+
+                    <span>
+                        Create Account
+                    </span>
+
+                </button>
+
+            </form>
+
+
+            <div class="auth-footer">
+
+                <p>
+
+                    Already have an account?
+
+                    <a href="login.html">
+                        Sign in
+                    </a>
+
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="assets/js/auth.js"></script>
+
+    <script src="assets/js/register.js"></script>
+
+</body>
+
+</html>

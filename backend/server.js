@@ -4,7 +4,10 @@
    ===================================================== */
 
 const express = require("express");
-const cors = require("cors");
+const cors = require("cors"); 
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+
 require("dotenv").config();
 
 const transactionRoutes = require(
@@ -22,6 +25,53 @@ const db = require(
 );
 
 
+const apiLimiter =
+    rateLimit({
+
+        windowMs:
+            15 * 60 * 1000,
+
+        max: 100,
+
+        standardHeaders: true,
+
+        legacyHeaders: false,
+
+        message: {
+
+            success: false,
+
+            message:
+                "Too many requests. Please try again later."
+
+        }
+
+    });
+
+
+
+    const authLimiter =
+    rateLimit({
+
+        windowMs:
+            15 * 60 * 1000,
+
+        max: 10,
+
+        standardHeaders: true,
+
+        legacyHeaders: false,
+
+        message: {
+
+            success: false,
+
+            message:
+                "Too many authentication attempts. Please try again later."
+
+        }
+
+    });
 /* =====================================================
    APPLICATION
    ===================================================== */
@@ -30,18 +80,43 @@ const app = express();
 
 const PORT = process.env.PORT || 5000;
 
+if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET must be configured before starting the API.");
+}
+
 
 /* =====================================================
    MIDDLEWARE
    ===================================================== */
 
-app.use(cors());
+app.use(
+    helmet()
+);
 
-app.use(express.json());
+app.use(
+    cors({
+        origin: process.env.FRONTEND_URL
+    })
+);
 
-app.use(express.urlencoded({
-    extended: true
-}));
+app.use(
+    express.json({
+        limit: "10kb"
+    })
+);
+
+app.use(
+    express.urlencoded({
+        extended: true,
+        limit: "10kb"
+    })
+);
+
+app.use(
+    "/api",
+    apiLimiter
+);
+
 
 
 /* =====================================================
@@ -57,9 +132,9 @@ app.use(
 
 app.use(
     "/api/auth",
+    authLimiter,
     authRoutes
 );
-
 
 /* =====================================================
    HEALTH CHECK
@@ -161,25 +236,20 @@ app.use(
    ERROR HANDLER
    ===================================================== */
 
-app.use(
-    (err, req, res, next) => {
+app.use((err, req, res, next) => {
+    console.error("Server error:", err);
 
-        console.error(
-            "Server Error:",
-            err
-        );
+    const statusCode = Number.isInteger(err.statusCode)
+        ? err.statusCode
+        : 500;
 
-        res.status(500).json({
-
-            success: false,
-
-            message:
-                "Internal server error."
-
-        });
-
-    }
-);
+    res.status(statusCode).json({
+        success: false,
+        message: statusCode >= 500
+            ? "Unable to complete your request. Please try again later."
+            : err.message
+    });
+});
 
 
 /* =====================================================

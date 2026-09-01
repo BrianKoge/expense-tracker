@@ -212,10 +212,57 @@ const loginUser = async (
 };
 
 
+/* =====================================================
+   CURRENT USER (SAFE PUBLIC FIELDS ONLY)
+   ===================================================== */
+
+const getUserById = async (userId) => {
+
+    const [users] = await db.execute(
+        "SELECT id, name, email FROM users WHERE id = ? LIMIT 1",
+        [userId]
+    );
+
+    return users[0] || null;
+
+};
+
+/* =====================================================
+   PASSWORD CHANGE
+   ===================================================== */
+
+const changePassword = async (userId, currentPassword, newPassword) => {
+
+    const [users] = await db.execute(
+        "SELECT password_hash FROM users WHERE id = ? LIMIT 1",
+        [userId]
+    );
+
+    const user = users[0];
+    const matches = user && await bcrypt.compare(currentPassword, user.password_hash);
+
+    if (!matches) {
+        const error = new Error("Your current password is incorrect.");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+    await db.execute(
+        "UPDATE users SET password_hash = ? WHERE id = ?",
+        [passwordHash, userId]
+    );
+};
+
+
 module.exports = {
 
     registerUser,
 
-    loginUser
+    loginUser,
+
+    getUserById,
+
+    changePassword
 
 };

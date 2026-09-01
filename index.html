@@ -75,7 +75,7 @@
 
         <!-- Sidebar Bottom -->
         <div class="sidebar-bottom">
-          <div class="sidebar-help">
+          <button class="sidebar-help" id="helpButton" type="button">
             <div class="help-icon">
               <i data-lucide="circle-help"></i>
             </div>
@@ -83,7 +83,7 @@
               <strong> Need help? </strong>
               <span> We're here for you </span>
             </div>
-          </div>
+          </button>
 
           <div class="sidebar-user">
             <div class="user-avatar">B</div>
@@ -167,6 +167,7 @@
           <button type="button" data-profile-action="settings"><i data-lucide="settings-2"></i>Account settings</button>
           <button type="button" data-profile-action="theme"><i data-lucide="sun-moon"></i>Toggle theme</button>
           <button type="button" data-profile-action="help"><i data-lucide="circle-help"></i>Help and shortcuts</button>
+          <button type="button" data-profile-action="logout"><i data-lucide="log-out"></i>Sign out</button>
         </section>
 
         <!-- ======================================
@@ -797,6 +798,21 @@
      CATEGORIES PAGE
      ========================================== -->
 
+<div class="app-page help-page" id="helpPage">
+  <div class="page-header">
+    <div>
+      <p class="page-eyebrow">SUPPORT</p>
+      <h1>Need help?</h1>
+      <p class="page-description">A few quick answers to help you manage your finances.</p>
+    </div>
+  </div>
+  <div class="help-grid">
+    <article class="settings-card"><i data-lucide="receipt-text"></i><h2>Add a transaction</h2><p>Use the Add Transaction button, select a type and category, then save it to update your dashboard.</p></article>
+    <article class="settings-card"><i data-lucide="tags"></i><h2>Manage categories</h2><p>Create, edit, or remove categories from the Categories page. Category totals update from matching transactions.</p></article>
+    <article class="settings-card"><i data-lucide="shield-check"></i><h2>Keep your account secure</h2><p>Use Settings → Security to change your password or sign out on this device.</p></article>
+  </div>
+</div>
+
 <div
     class="app-page"
     id="categoriesPage"
@@ -1069,7 +1085,6 @@
                         >
                             <i data-lucide="tag"></i>
                         </button>
-
 
                         <button
                             type="button"
@@ -1377,6 +1392,8 @@
                             Change
 
                         </button>
+
+                        <input id="avatarInput" type="file" accept="image/png,image/jpeg,image/webp" hidden>
 
                     </div>
 
@@ -2291,6 +2308,9 @@
   <script src="utils/storage.js"></script>
   <script src="utils/currency.js"></script>
   <script src="utils/calculations.js"></script>
+
+  <script src="assets/js/auth.js"></script>
+
 
   <script src="assets/js/app.js"></script>
   

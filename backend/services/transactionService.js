@@ -173,7 +173,8 @@ const getTransactionById = async (
 
 const updateTransaction = async (
     transactionId,
-    transactionData
+    transactionData,
+    userId
 ) => {
 
     const {
@@ -234,9 +235,7 @@ const updateTransaction = async (
     }
 
 
-    return getTransactionById(
-        transactionId
-    );
+    return getTransactionById(transactionId, userId);
 
 };
 
@@ -247,6 +246,7 @@ const updateTransaction = async (
 
 const deleteTransaction = async (
     transactionId,
+    userId
 ) => {
 
     const [result] =

@@ -533,6 +533,8 @@ function setupTransactionForm() {
 
 function refreshTransactionUI() {
 
+    populateTransactionCategories();
+
     if (typeof populateTransactionFilterCategories === "function") {
         populateTransactionFilterCategories();
     }
@@ -854,7 +856,8 @@ function setActivePage(page) {
         transactions: "Transactions",
         analytics: "Analytics",
         categories: "Categories",
-        settings: "Settings"
+        settings: "Settings",
+        help: "Help"
     };
 
     if (pageName) {
@@ -1076,7 +1079,8 @@ function setupInteractiveControls() {
 
         if (action === "settings") setActivePage("settings");
         if (action === "theme") ThemeManager.toggle();
-        if (action === "help") ToastManager.show("Tip: use the search button to quickly find transactions.", "info", "Quick help");
+        if (action === "help") setActivePage("help");
+        if (action === "logout") AuthManager.logout();
         closePanels();
     });
 
@@ -1437,6 +1441,7 @@ function createCategory(categoryData) {
     renderCategories();
     populateBudgetCategories();
     renderBudgets();
+    refreshTransactionUI();
 
     return category;
 
@@ -1461,7 +1466,7 @@ function updateCategory(categoryId, categoryData) {
 
     if (previousName !== nextName) {
         AppState.transactions.forEach(transaction => {
-            if (transaction.category === previousName) {
+            if (String(transaction.category || "").toLowerCase() === previousName.toLowerCase()) {
                 transaction.category = nextName;
             }
         });
@@ -1488,7 +1493,8 @@ function getCategorySpending(categoryName) {
     return AppState.transactions
         .filter(transaction =>
             transaction.type === "expense" &&
-            transaction.category === categoryName
+            String(transaction.category || "").toLowerCase() ===
+            String(categoryName || "").toLowerCase()
         )
         .reduce((total, transaction) => total + Number(transaction.amount || 0), 0);
 
@@ -1498,7 +1504,8 @@ function getCategoryTransactionCount(categoryName) {
 
     return AppState.transactions.filter(transaction =>
         transaction.type === "expense" &&
-        transaction.category === categoryName
+        String(transaction.category || "").toLowerCase() ===
+        String(categoryName || "").toLowerCase()
     ).length;
 
 }
@@ -3125,18 +3132,104 @@ function createAnalyticsTrendChart() {
     const canvas = document.getElementById("analyticsTrendChart");
     if (!canvas || typeof Chart === "undefined") return;
     Chart.getChart(canvas)?.destroy();
+
     const trend = getAnalyticsTrend(getAnalyticsTransactions());
+    const context = canvas.getContext("2d");
+    const expenseGradient = context?.createLinearGradient(0, 0, 0, 260) ?? null;
+    const incomeGradient = context?.createLinearGradient(0, 0, 0, 260) ?? null;
+
+    if (expenseGradient) {
+        expenseGradient.addColorStop(0, "rgba(239, 68, 68, 0.28)");
+        expenseGradient.addColorStop(1, "rgba(239, 68, 68, 0.02)");
+    }
+
+    if (incomeGradient) {
+        incomeGradient.addColorStop(0, "rgba(34, 197, 94, 0.18)");
+        incomeGradient.addColorStop(1, "rgba(34, 197, 94, 0.02)");
+    }
 
     new Chart(canvas, {
         type: "line",
         data: {
             labels: trend.labels,
             datasets: [
-                { label: "Expenses", data: trend.expenses, borderColor: "#ef4444", borderWidth: 2, tension: 0.4, fill: false, pointRadius: 2 },
-                { label: "Income", data: trend.income, borderColor: "#22c55e", borderWidth: 2, borderDash: [5, 5], tension: 0.4, fill: false, pointRadius: 2 }
+                {
+                    label: "Expenses",
+                    data: trend.expenses,
+                    borderColor: "#ef4444",
+                    backgroundColor: expenseGradient,
+                    borderWidth: 3,
+                    tension: 0.42,
+                    fill: true,
+                    pointRadius: 3,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: "#fff",
+                    pointBorderWidth: 2,
+                    pointBorderColor: "#ef4444",
+                    pointStyle: "circle"
+                },
+                {
+                    label: "Income",
+                    data: trend.income,
+                    borderColor: "#22c55e",
+                    backgroundColor: incomeGradient,
+                    borderWidth: 2,
+                    borderDash: [6, 6],
+                    tension: 0.42,
+                    fill: true,
+                    pointRadius: 2,
+                    pointHoverRadius: 5,
+                    pointBackgroundColor: "#fff",
+                    pointBorderWidth: 2,
+                    pointBorderColor: "#22c55e",
+                    pointStyle: "circle"
+                }
             ]
         },
-        options: { responsive: true, maintainAspectRatio: false, interaction: { intersect: false, mode: "index" }, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { callback: value => CurrencyManager.format(value) } }, x: { grid: { display: false } } } }
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { intersect: false, mode: "index" },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: "rgba(17, 24, 39, 0.92)",
+                    borderColor: "rgba(255, 255, 255, 0.06)",
+                    borderWidth: 1,
+                    padding: 10,
+                    displayColors: true,
+                    callbacks: {
+                        label(context) {
+                            return `${context.dataset.label}: ${CurrencyManager.format(context.parsed.y)}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: "rgba(148, 163, 184, 0.14)",
+                        drawBorder: false
+                    },
+                    border: { display: false },
+                    ticks: {
+                        color: "#8b8a94",
+                        font: { size: 10 },
+                        callback: value => CurrencyManager.format(value)
+                    }
+                },
+                x: {
+                    grid: { display: false },
+                    border: { display: false },
+                    ticks: {
+                        color: "#8b8a94",
+                        font: { size: 10 },
+                        maxTicksLimit: AnalyticsState.period === "year" ? 12 : 8
+                    }
+                }
+            }
+        }
     });
 }
 
@@ -3416,7 +3509,7 @@ function setupCategorySearch() {
 
         const filtered = AppState.categories.filter(category =>
             category.name.toLowerCase().includes(search) ||
-            category.description.toLowerCase().includes(search)
+            String(category.description || "").toLowerCase().includes(search)
         );
 
         renderCategories(filtered);
@@ -3618,6 +3711,7 @@ function setupCategoryActions() {
             renderCategories();
             populateBudgetCategories();
             renderBudgets();
+            refreshTransactionUI();
 
         }
 
@@ -3883,22 +3977,20 @@ function setupSecurityActions() {
     const deleteTransactionsButton = document.getElementById("deleteTransactionsButton");
     const deleteAccountButton = document.getElementById("deleteAccountButton");
 
-    logoutButton?.addEventListener("click", () => {
+    
 
-        const confirmed = window.confirm("Are you sure you want to sign out?");
+    if (logoutButton) {
 
-        if (!confirmed) {
-            return;
-        }
+        logoutButton.addEventListener(
+            "click",
+            () => {
 
-        /*
-         * Backend authentication
-         * will be connected here later.
-         */
+                AuthManager.logout();
 
-        alert("You have been signed out.");
+            }
+        );
 
-    });
+    }
 
     deleteTransactionsButton?.addEventListener("click", () => {
 
@@ -3930,6 +4022,76 @@ function setupSecurityActions() {
 
 }
 
+function populateTransactionCategories() {
+
+    const select = document.getElementById("transactionCategory");
+
+    if (!select) return;
+
+    const selectedValue = select.value;
+    const categories = AppState.categories.slice().sort((a, b) =>
+        a.name.localeCompare(b.name)
+    );
+
+    select.innerHTML = '<option value="">Select a category</option>' + categories.map(category =>
+        `<option value="${escapeHTML(category.name)}">${escapeHTML(category.name)}</option>`
+    ).join("");
+
+    if (categories.some(category => category.name === selectedValue)) {
+        select.value = selectedValue;
+    }
+
+}
+
+
+/* =====================================================
+   PROFILE AVATAR AND HELP
+   ===================================================== */
+
+function applyProfileAvatar(imageData) {
+
+    document.querySelectorAll(".user-avatar, .profile-avatar-large").forEach(avatar => {
+        avatar.classList.toggle("has-profile-image", Boolean(imageData));
+        avatar.style.backgroundImage = imageData ? `url("${imageData}")` : "";
+    });
+
+}
+
+function setupProfileTools() {
+
+    const helpButton = document.getElementById("helpButton");
+    const changeAvatarButton = document.getElementById("changeAvatarButton");
+    const avatarInput = document.getElementById("avatarInput");
+    const storedAvatar = localStorage.getItem("expenseTrackerAvatar");
+
+    applyProfileAvatar(storedAvatar);
+
+    helpButton?.addEventListener("click", () => setActivePage("help"));
+    changeAvatarButton?.addEventListener("click", () => avatarInput?.click());
+
+    avatarInput?.addEventListener("change", () => {
+        const file = avatarInput.files?.[0];
+
+        if (!file) return;
+
+        if (!file.type.startsWith("image/") || file.size > 2 * 1024 * 1024) {
+            ToastManager.show("Choose a PNG, JPEG, or WebP image smaller than 2 MB.", "error");
+            avatarInput.value = "";
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.addEventListener("load", () => {
+            const imageData = String(reader.result || "");
+            localStorage.setItem("expenseTrackerAvatar", imageData);
+            applyProfileAvatar(imageData);
+            ToastManager.show("Profile picture updated.", "success");
+        });
+        reader.readAsDataURL(file);
+    });
+
+}
+
 
 /* =====================================================
    CHANGE PASSWORD
@@ -3939,7 +4101,7 @@ function setupChangePassword() {
 
     const changePasswordButton = document.getElementById("changePasswordButton");
 
-    changePasswordButton?.addEventListener("click", () => {
+    changePasswordButton?.addEventListener("click", async () => {
 
         const currentPassword = prompt("Enter your current password:");
         if (currentPassword === null) return;
@@ -3952,8 +4114,8 @@ function setupChangePassword() {
         const newPassword = prompt("Enter your new password:");
         if (newPassword === null) return;
 
-        if (newPassword.length < 6) {
-            alert("New password must be at least 6 characters long.");
+        if (newPassword.length < 8) {
+            ToastManager.show("Your new password must be at least 8 characters.", "error");
             return;
         }
 
@@ -3965,7 +4127,22 @@ function setupChangePassword() {
             return;
         }
 
-        alert("Demo mode: password change will be connected to the backend later.");
+        try {
+            changePasswordButton.disabled = true;
+            changePasswordButton.textContent = "Updating...";
+
+            await apiRequest("/auth/password", {
+                method: "PUT",
+                body: JSON.stringify({ currentPassword, newPassword })
+            });
+
+            ToastManager.show("Password changed successfully.", "success");
+        } catch (error) {
+            ToastManager.show(error.message || "Unable to change your password.", "error");
+        } finally {
+            changePasswordButton.disabled = false;
+            changePasswordButton.textContent = "Change";
+        }
 
     });
 
@@ -3978,7 +4155,15 @@ function setupChangePassword() {
 
 document.addEventListener(
     "DOMContentLoaded",
-    () => {
+    async () => {
+
+        if (!await AuthManager.requireAuthentication()) {
+
+            return;
+
+        }
+
+        AuthManager.populateUserDetails();
 
         initializeAppState();
 
@@ -3995,6 +4180,8 @@ document.addEventListener(
         setupTransactionModal();
 
         setupTransactionForm();
+
+        populateTransactionCategories();
 
         setupTransactionFilters();
 
@@ -4019,6 +4206,10 @@ document.addEventListener(
         setupSettingsSaving();
 
         setupSecurityActions();
+
+        setupProfileTools();
+
+        setupChangePassword();
 
         loadSettings();
 
