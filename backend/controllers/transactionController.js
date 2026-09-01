@@ -18,8 +18,9 @@ const getTransactions = async (
 
         const transactions =
             await transactionService
-                .getAllTransactions();
-
+                .getAllTransactions(
+                    req.user.id
+        );
 
         res.status(200).json({
 
@@ -53,7 +54,8 @@ const createTransaction = async (
         const transaction =
             await transactionService
                 .createTransaction(
-                    req.body
+                    req.body,
+                    req.user.id
                 );
 
 
@@ -90,10 +92,11 @@ const getTransactionById = async (
     try {
 
         const transaction =
-            await transactionService
-                .getTransactionById(
-                    req.params.id
-                );
+             await transactionService
+                   .getTransactionById(
+                       req.params.id,
+                       req.user.id
+                    );
 
 
         if (!transaction) {
@@ -143,7 +146,8 @@ const updateTransaction = async (
             await transactionService
                 .updateTransaction(
                     req.params.id,
-                    req.body
+                    req.body,
+                    req.user.id
                 );
 
 
@@ -192,12 +196,12 @@ const deleteTransaction = async (
 ) => {
 
     try {
-
-        const deleted =
-            await transactionService
-                .deleteTransaction(
-                    req.params.id
-                );
+            const deleted =
+                await transactionService
+                    .deleteTransaction(
+                        req.params.id,
+                        req.user.id
+                    );
 
 
         if (!deleted) {

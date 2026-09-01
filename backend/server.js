@@ -11,6 +11,12 @@ const transactionRoutes = require(
     "./routes/transactionRoutes"
 );
 
+const authRoutes =require("./routes/authRoutes");
+
+const {authenticateToken} = require(
+    "./middleware/authMiddleware"
+);
+
 const db = require(
     "./config/database"
 );
@@ -44,7 +50,14 @@ app.use(express.urlencoded({
 
 app.use(
     "/api/transactions",
+    authenticateToken,
     transactionRoutes
+);
+
+
+app.use(
+    "/api/auth",
+    authRoutes
 );
 
 

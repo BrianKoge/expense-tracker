@@ -7,32 +7,24 @@ const db = require(
    GET ALL TRANSACTIONS
    ===================================================== */
 
-const getAllTransactions = async () => {
+const getAllTransactions = async (
+    userId
+) => {
 
     const [rows] = await db.query(`
 
         SELECT
 
             t.id,
-
             t.title,
-
             t.amount,
-
             t.type,
-
             t.transaction_date,
-
             t.description,
-
             t.category_id,
-
             c.name AS category,
-
             c.icon AS category_icon,
-
             t.created_at,
-
             t.updated_at
 
         FROM transactions t
@@ -40,85 +32,89 @@ const getAllTransactions = async () => {
         LEFT JOIN categories c
             ON t.category_id = c.id
 
+        WHERE t.user_id = ?
+
         ORDER BY
             t.transaction_date DESC,
             t.created_at DESC
 
-    `);
+    `, [userId]);
 
 
     return rows;
 
 };
 
-
 /* =====================================================
    CREATE TRANSACTION
    ===================================================== */
 
 const createTransaction = async (
-    transactionData
+    transactionData,
+    userId
 ) => {
 
     const {
 
         title,
-
         amount,
-
         category_id,
-
         type,
-
         transaction_date,
-
         description
 
     } = transactionData;
 
 
-    const [result] = await db.execute(`
+    const [result] =
+        await db.execute(`
 
-        INSERT INTO transactions (
+            INSERT INTO transactions (
 
+                user_id,
+                title,
+                amount,
+                category_id,
+                type,
+                transaction_date,
+                description
+
+            )
+
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+
+        `, [
+
+            userId,
             title,
-
             amount,
-
-            category_id,
-
+            category_id || null,
             type,
-
             transaction_date,
+            description || null
 
-            description
-
-        )
-
-        VALUES (?, ?, ?, ?, ?, ?)
-
-    `, [
-
-        title,
-
-        amount,
-
-        category_id || null,
-
-        type,
-
-        transaction_date,
-
-        description || null
-
-    ]);
+        ]);
 
 
     return {
 
         id: result.insertId,
 
-        ...transactionData
+        user_id: userId,
+
+        title,
+
+        amount,
+
+        category_id:
+            category_id || null,
+
+        type,
+
+        transaction_date,
+
+        description:
+            description || null
 
     };
 
@@ -130,41 +126,40 @@ const createTransaction = async (
    ===================================================== */
 
 const getTransactionById = async (
-    transactionId
+    transactionId,
+    userId
 ) => {
 
-    const [rows] = await db.execute(`
+    const [rows] =
+        await db.execute(`
 
-        SELECT
+            SELECT
 
-            t.id,
+                t.id,
+                t.title,
+                t.amount,
+                t.type,
+                t.transaction_date,
+                t.description,
+                t.category_id,
+                c.name AS category,
+                c.icon AS category_icon
 
-            t.title,
+            FROM transactions t
 
-            t.amount,
+            LEFT JOIN categories c
+                ON t.category_id = c.id
 
-            t.type,
+            WHERE
+                t.id = ?
+                AND t.user_id = ?
 
-            t.transaction_date,
+            LIMIT 1
 
-            t.description,
-
-            t.category_id,
-
-            c.name AS category,
-
-            c.icon AS category_icon
-
-        FROM transactions t
-
-        LEFT JOIN categories c
-            ON t.category_id = c.id
-
-        WHERE t.id = ?
-
-        LIMIT 1
-
-    `, [transactionId]);
+        `, [
+            transactionId,
+            userId
+        ]);
 
 
     return rows[0] || null;
@@ -198,43 +193,36 @@ const updateTransaction = async (
     } = transactionData;
 
 
-    const [result] = await db.execute(`
+        const [result] =
+            await db.execute(`
 
-        UPDATE transactions
+                UPDATE transactions
 
-        SET
+                SET
 
-            title = ?,
+                    title = ?,
+                    amount = ?,
+                    category_id = ?,
+                    type = ?,
+                    transaction_date = ?,
+                    description = ?
 
-            amount = ?,
+                WHERE
+                    id = ?
+                    AND user_id = ?
 
-            category_id = ?,
+            `, [
 
-            type = ?,
+                title,
+                amount,
+                category_id || null,
+                type,
+                transaction_date,
+                description || null,
+                transactionId,
+                userId
 
-            transaction_date = ?,
-
-            description = ?
-
-        WHERE id = ?
-
-    `, [
-
-        title,
-
-        amount,
-
-        category_id || null,
-
-        type,
-
-        transaction_date,
-
-        description || null,
-
-        transactionId
-
-    ]);
+            ]);
 
 
     if (
@@ -258,16 +246,22 @@ const updateTransaction = async (
    ===================================================== */
 
 const deleteTransaction = async (
-    transactionId
+    transactionId,
 ) => {
 
-    const [result] = await db.execute(`
+    const [result] =
+    await db.execute(`
 
         DELETE FROM transactions
 
-        WHERE id = ?
+        WHERE
+            id = ?
+            AND user_id = ?
 
-    `, [transactionId]);
+    `, [
+        transactionId,
+        userId
+    ]);
 
 
     return result.affectedRows > 0;
